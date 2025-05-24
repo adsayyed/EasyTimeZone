@@ -808,6 +808,8 @@
           cstInput.querySelector(".minutes").value = currentMinutes.toString().padStart(2, "0");
           cstInput.querySelector(`.ampm-btn[data-period='${period}']`).classList.add("selected");
           updateTimes(cstInput);
+          // Always ensure the timezone popup is populated after loading preferences
+          renderTimezoneList();
           return true;
         };
 
