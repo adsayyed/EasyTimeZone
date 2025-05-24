@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Time Zone</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Use Montserrat Alternates from Google Fonts */
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;700&display=swap');
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      input[type="text"]::-webkit-calendar-picker-indicator { display: none; }
+      html, body, * { font-family: system-ui, sans-serif !important; font-weight: 400; }
+      h1 { font-weight: 700; }
+      .text-xl, .text-2xl, .text-3xl { font-weight: 500; }
+      #timezone-list, #theme-list {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      #timezone-list::-webkit-scrollbar, #theme-list::-webkit-scrollbar {
+        display: none;
+      }
+      .drag-handle, .remove-btn {
+        display: none;
+        cursor: pointer;
+      }
+      .drag-handle {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        color: #A1A1AA;
+      }
+      .remove-btn {
+        color: #EF4444;
+        font-size: 1rem;
+        line-height: 1;
+        margin-left: 0.5rem;
+      }
+      .time-zone-box:hover .drag-handle,
+      .time-zone-box:hover .remove-btn {
+        display: block;
+      }
+      .time-zone-box {
+        position: relative;
+      }
+      .timezone-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+      .time-input-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2px;
+      }
+      .time-input {
+        width: 60px;
+        text-align: center;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: inherit;
+        padding: 4px;
+        border-radius: 4px;
+      }
+      .ampm-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .ampm-btn {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: transparent;
+        color: inherit;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+      .ampm-btn.selected {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .time-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .time-input::placeholder {
+        color: #A1A1AA;
+      }
+      @media (max-width: 640px) {
+        #timezone-list, #theme-list {
+          max-height: 144px;
+        }
+        #timezone-popup {
+          top: 60px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 10;
+        }
+        #theme-popup {
+          bottom: 60px;
+          right: 50%;
+          transform: translateX(50%);
+          z-index: 10;
+        }
+      }
+    .font-option {
+  background: none;
+  color: #d1d5db;
+}
+.font-option.selected {
+  background: #374151;
+  color: #fff;
+}
+.font-option:hover {
+  background: #374151;
+  color: #fff;
+}
+
+</style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#E2B714",
+              secondary: "#529488",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px ",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen flex items-center justify-center bg-gray-100 text-gray-900 p-4" id="body">
+    <div class="max-w-4xl w-full">
+      <h1 class="text-3xl font-bold text-center mb-8">Quick Time Zone</h1>
+      <div class="flex items-center justify-end mb-4">
+        <button id="live-time-btn" class="bg-primary hover:bg-[#2563EB] text-gray-900 px-4 py-2 !rounded-button flex items-center gap-2">
+          <i class="ri-time-line w-5 h-5 flex items-center justify-center"></i>
+          <span class="whitespace-nowrap">Live Time</span>
+        </button>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-4 items-center" id="timezone-container">
+        <div class="time-zone-box w-4/5 max-w-xs sm:flex-1 bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-[#323232] transition-colors mx-auto" id="pst-box" draggable="true" data-timezone="America/Los_Angeles" data-offset="-2">
+          <div class="timezone-header">
+  <div class="text-xl flex items-center gap-2">
+    <span>PST</span>
+    <span class="text-sm text-gray-400">-2</span>
+  </div>
+  <button class="remove-btn" title="Remove PST" aria-label="Remove PST">&times;</button>
+</div>
+          <div class="time-input-container hidden" id="pst-input">
+            <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
+            <span>:</span>
+            <input type="text" class="time-input minutes" maxlength="2" placeholder="MM" />
+            <div class="ampm-container">
+              <button class="ampm-btn" data-period="AM">AM</button>
+              <button class="ampm-btn" data-period="PM">PM</button>
+            </div>
+          </div>
+          <div class="time-display text-2xl font-medium text-center" id="pst-time">--:--</div>
+          <i class="drag-handle ri-drag-move-2-line w-5 h-5 text-gray-400"></i>
+        </div>
+        <div class="time-zone-box w-4/5 max-w-xs sm:flex-1 bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-[#323232] transition-colors mx-auto" id="cst-box" draggable="true" data-timezone="America/Chicago" data-offset="0">
+          <div class="timezone-header">
+  <div class="text-xl flex items-center gap-2">
+    <span>CST</span>
+  </div>
+  <button class="remove-btn" title="Remove CST" aria-label="Remove CST">&times;</button>
+</div>
+          <div class="time-input-container hidden" id="cst-input">
+            <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
+            <span>:</span>
+            <input type="text" class="time-input minutes" maxlength="2" placeholder="MM" />
+            <div class="ampm-container">
+              <button class="ampm-btn" data-period="AM">AM</button>
+              <button class="ampm-btn" data-period="PM">PM</button>
+            </div>
+          </div>
+          <div class="time-display text-2xl font-medium text-center" id="cst-time">--:--</div>
+          <i class="drag-handle ri-drag-move-2-line w-5 h-5 text-gray-400"></i>
+        </div>
+        <div class="time-zone-box w-4/5 max-w-xs sm:flex-1 bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-[#323232] transition-colors mx-auto" id="est-box" draggable="true" data-timezone="America/New_York" data-offset="1">
+          <div class="timezone-header">
+  <div class="text-xl flex items-center gap-2">
+    <span>EST</span>
+    <span class="text-sm text-gray-400">+1</span>
+  </div>
+  <button class="remove-btn" title="Remove EST" aria-label="Remove EST">&times;</button>
+</div>
+          <div class="time-input-container hidden" id="est-input">
+            <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
+            <span>:</span>
+            <input type="text" class="time-input minutes" maxlength="2" placeholder="MM" />
+            <div class="ampm-container">
+              <button class="ampm-btn" data-period="AM">AM</button>
+              <button class="ampm-btn" data-period="PM">PM</button>
+            </div>
+          </div>
+          <div class="time-display text-2xl font-medium text-center" id="est-time">--:--</div>
+          <i class="drag-handle ri-drag-move-2-line w-5 h-5 text-gray-400"></i>
+        </div>
+        <div class="relative" id="add-timezone-wrapper">
+          <button id="add-timezone-btn" class="w-12 h-12 text-gray-400 hover:text-gray-300 flex items-center justify-center transition-colors">
+            <i class="ri-add-line w-6 h-6 flex items-center justify-center"></i>
+          </button>
+          <div id="timezone-popup" class="hidden absolute top-14 left-0 sm:top-0 sm:right-[-270px] bg-gray-800 rounded-lg p-3 w-64 shadow-lg">
+            <div class="mb-3">
+              <div class="relative">
+                <input type="text" id="timezone-search" placeholder="Search timezone..." class="w-full bg-gray-700 text-gray-100 px-3 py-2 pr-8 rounded text-sm border-none" />
+                <i class="ri-search-line absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 flex items-center justify-center"></i>
+              </div>
+            </div>
+            <div class="space-y-1 overflow-y-scroll h-[200px]" id="timezone-list"></div>
+          </div>
+        </div>
+      </div>
+      <div id="error-message" class="mt-4 text-red-400 text-center hidden">
+        Please enter a valid time
+      </div>
+      <div class="fixed bottom-4 right-4 flex items-center gap-4">
+        <div class="relative flex items-center gap-2">
+          <button id="theme-btn" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors">
+            <i class="ri-palette-line w-5 h-5 flex items-center justify-center"></i>
+          </button>
+          <button id="reset-btn" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors" title="Reset to Default">
+            <i class="ri-refresh-line w-5 h-5 flex items-center justify-center"></i>
+          </button>
+          <button id="font-btn" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors" title="Change Font">
+            <i id="font-btn-icon" class="ri-font-size-2 w-5 h-5 flex items-center justify-center"></i>
+          </button>
+          <div id="font-popup" class="hidden absolute bottom-12 right-0 bg-[#1E1E1E] rounded-lg p-3 w-48 shadow-lg z-50">
+            <div class="text-sm text-gray-400 mb-2">Select Font</div>
+            <div class="space-y-2 overflow-y-scroll h-[200px]" id="font-list">
+              <!-- Font options will be dynamically inserted here -->
+            </div>
+          </div>
+          <div id="theme-popup" class="hidden absolute bottom-12 right-0 bg-gray-800 rounded-lg p-3 w-48 shadow-lg">
+            <div class="text-sm text-gray-400 mb-2">Select Theme</div>
+            <div class="space-y-2 overflow-y-scroll h-[200px]" id="theme-list">
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="light">
+                <div class="w-4 h-4 rounded-full bg-[#F5F5F5]"></div>
+                <span class="text-sm text-gray-300">Light</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="dark">
+                <div class="w-4 h-4 rounded-full bg-[#000000]"></div>
+                <span class="text-sm text-gray-300">Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="serika-dark">
+                <div class="w-4 h-4 rounded-full bg-[#E2B714]"></div>
+                <span class="text-sm text-gray-300">Serika Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="dracula">
+                <div class="w-4 h-4 rounded-full bg-[#FF79C6]"></div>
+                <span class="text-sm text-gray-300">Dracula</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="nord">
+                <div class="w-4 h-4 rounded-full bg-[#81A1C1]"></div>
+                <span class="text-sm text-gray-300">Nord</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="solarized-dark">
+                <div class="w-4 h-4 rounded-full bg-[#2AA198]"></div>
+                <span class="text-sm text-gray-300">Solarized Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="gruvbox-dark">
+                <div class="w-4 h-4 rounded-full bg-[#FABD2F]"></div>
+                <span class="text-sm text-gray-300">Gruvbox Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="iceland">
+                <div class="w-4 h-4 rounded-full bg-[#C0C5CE]"></div>
+                <span class="text-sm text-gray-300">Iceland</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="botanical">
+                <div class="w-4 h-4 rounded-full bg-[#A3BE8C]"></div>
+                <span class="text-sm text-gray-300">Botanical</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="github">
+                <div class="w-4 h-4 rounded-full bg-[#28A745]"></div>
+                <span class="text-sm text-gray-300">GitHub</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="phantom">
+                <div class="w-4 h-4 rounded-full bg-[#BD93F9]"></div>
+                <span class="text-sm text-gray-300">Phantom</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="earthsong">
+                <div class="w-4 h-4 rounded-full bg-[#C07342]"></div>
+                <span class="text-sm text-gray-300">Earthsong</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="catppuccin">
+                <div class="w-4 h-4 rounded-full bg-[#F5C2E7]"></div>
+                <span class="text-sm text-gray-300">Catppuccin</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="tokyo-night">
+                <div class="w-4 h-4 rounded-full bg-[#7AA2F7]"></div>
+                <span class="text-sm text-gray-300">Tokyo Night</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="one-dark">
+                <div class="w-4 h-4 rounded-full bg-[#61AFEF]"></div>
+                <span class="text-sm text-gray-300">One Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="ayu-dark">
+                <div class="w-4 h-4 rounded-full bg-[#F8C555]"></div>
+                <span class="text-sm text-gray-300">Ayu Dark</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="ayu-mirage">
+                <div class="w-4 h-4 rounded-full bg-[#5CCFE6]"></div>
+                <span class="text-sm text-gray-300">Ayu Mirage</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="everforest">
+                <div class="w-4 h-4 rounded-full bg-[#A7C080]"></div>
+                <span class="text-sm text-gray-300">Everforest</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="rose-pine">
+                <div class="w-4 h-4 rounded-full bg-[#E0DEF4]"></div>
+                <span class="text-sm text-gray-300">Rose Pine</span>
+              </button>
+              <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="monokai">
+                <div class="w-4 h-4 rounded-full bg-[#F92672]"></div>
+                <span class="text-sm text-gray-300">Monokai</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-800 rounded-lg px-3 py-2 text-sm text-gray-400">
+          v1.0.0
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const timezones = [
+          { name: "UTC", shorthand: "UTC", offset: 6 },
+          { name: "GMT", shorthand: "GMT", offset: 6 },
+          { name: "ECT", shorthand: "ECT", offset: 7 },
+          { name: "EET", shorthand: "EET", offset: 8 },
+          { name: "ART", shorthand: "ART", offset: 9 },
+          { name: "EAT", shorthand: "EAT", offset: 9 },
+          { name: "MET", shorthand: "MET", offset: 9 },
+          { name: "NET", shorthand: "NET", offset: 10 },
+          { name: "PLT", shorthand: "PLT", offset: 11 },
+          { name: "IST", shorthand: "IST", offset: 11.5 },
+          { name: "BST", shorthand: "BST", offset: 12 },
+          { name: "VST", shorthand: "VST", offset: 12 },
+          { name: "CTT", shorthand: "CTT", offset: 14 },
+          { name: "JST", shorthand: "JST", offset: 15 },
+          { name: "ACT", shorthand: "ACT", offset: 15.5 },
+          { name: "AET", shorthand: "AET", offset: 16 },
+          { name: "SST", shorthand: "SST", offset: 17 },
+          { name: "NST", shorthand: "NST", offset: 18 },
+          { name: "MIT", shorthand: "MIT", offset: -5 },
+          { name: "HST", shorthand: "HST", offset: -4 },
+          { name: "AST", shorthand: "AST", offset: 2 },
+          { name: "America/Los_Angeles", shorthand: "PST", offset: -2 },
+          { name: "America/Denver", shorthand: "MST", offset: -1 },
+          { name: "America/Chicago", shorthand: "CST", offset: 0 },
+          { name: "America/New_York", shorthand: "EST", offset: 1 },
+          { name: "PRT", shorthand: "PRT", offset: 2 },
+          { name: "CNT", shorthand: "CNT", offset: 2.5 },
+          { name: "AGT", shorthand: "AGT", offset: 3 },
+          { name: "BET", shorthand: "BET", offset: 3 },
+          { name: "CAT", shorthand: "CAT", offset: 7 },
+          { name: "Pacific/Midway", shorthand: "SST", offset: -5 },
+          { name: "Pacific/Niue", shorthand: "NUT", offset: -5 },
+          { name: "Pacific/Pago_Pago", shorthand: "SST", offset: -5 },
+          { name: "America/Adak", shorthand: "HDT", offset: -4 },
+          { name: "Pacific/Honolulu", shorthand: "HST", offset: -4 },
+          { name: "Pacific/Johnston", shorthand: "HST", offset: -4 },
+          { name: "Pacific/Rarotonga", shorthand: "CKT", offset: -4 },
+          { name: "Pacific/Tahiti", shorthand: "TAHT", offset: -4 },
+          { name: "America/Anchorage", shorthand: "AKDT", offset: -3 },
+          { name: "America/Juneau", shorthand: "AKDT", offset: -3 },
+          { name: "America/Nome", shorthand: "AKDT", offset: -3 },
+          { name: "America/Sitka", shorthand: "AKDT", offset: -3 },
+          { name: "America/Yakutat", shorthand: "AKDT", offset: -3 },
+          { name: "America/Tijuana", shorthand: "PDT", offset: -2 },
+          { name: "America/Vancouver", shorthand: "PDT", offset: -2 },
+          { name: "America/Phoenix", shorthand: "MST", offset: -1 },
+          { name: "America/Mexico_City", shorthand: "CDT", offset: 0 },
+          { name: "America/Toronto", shorthand: "EDT", offset: 1 },
+          { name: "America/Caracas", shorthand: "VET", offset: 1.5 },
+          { name: "America/Halifax", shorthand: "ADT", offset: 2 },
+          { name: "America/St_Johns", shorthand: "NDT", offset: 2.5 },
+          { name: "America/Argentina/Buenos_Aires", shorthand: "ART", offset: 3 },
+          { name: "America/Sao_Paulo", shorthand: "BRT", offset: 3 },
+          { name: "Atlantic/Azores", shorthand: "AZOT", offset: 5 },
+          { name: "Atlantic/Cape_Verde", shorthand: "CVT", offset: 5 },
+          { name: "Europe/London", shorthand: "BST", offset: 6 },
+          { name: "Europe/Dublin", shorthand: "IST", offset: 6 },
+          { name: "Europe/Paris", shorthand: "CEST", offset: 7 },
+          { name: "Europe/Rome", shorthand: "CEST", offset: 7 },
+          { name: "Europe/Moscow", shorthand: "MSK", offset: 9 },
+          { name: "Asia/Dubai", shorthand: "GST", offset: 10 },
+          { name: "Asia/Tehran", shorthand: "IRST", offset: 9.5 },
+          { name: "Asia/Kabul", shorthand: "AFT", offset: 10.5 },
+          { name: "Asia/Karachi", shorthand: "PKT", offset: 11 },
+          { name: "Asia/Kolkata", shorthand: "IST", offset: 11.5 },
+          { name: "Asia/Kathmandu", shorthand: "NPT", offset: 11.75 },
+          { name: "Asia/Dhaka", shorthand: "BDT", offset: 12 },
+          { name: "Asia/Rangoon", shorthand: "MMT", offset: 12.5 },
+          { name: "Asia/Bangkok", shorthand: "ICT", offset: 13 },
+          { name: "Asia/Singapore", shorthand: "SGT", offset: 14 },
+          { name: "Asia/Shanghai", shorthand: "CST", offset: 14 },
+          { name: "Asia/Tokyo", shorthand: "JST", offset: 15 },
+          { name: "Australia/Darwin", shorthand: "ACST", offset: 15.5 },
+          { name: "Australia/Adelaide", shorthand: "ACST", offset: 15.5 },
+          { name: "Australia/Sydney", shorthand: "AEST", offset: 16 },
+          { name: "Pacific/Noumea", shorthand: "NCT", offset: 17 },
+          { name: "Pacific/Auckland", shorthand: "NZST", offset: 18 },
+        ];
+        let estInput = document.getElementById("est-input");
+        let cstInput = document.getElementById("cst-input");
+        let pstInput = document.getElementById("pst-input");
+        const estTime = document.getElementById("est-time");
+        const cstTime = document.getElementById("cst-time");
+        const pstTime = document.getElementById("pst-time");
+        const addTimezoneBtnEl = document.getElementById("add-timezone-btn");
+        const timezonePopupEl = document.getElementById("timezone-popup");
+        const timezoneSearchEl = document.getElementById("timezone-search");
+        const timezoneListEl = document.getElementById("timezone-list");
+        const timezoneContainer = document.getElementById("timezone-container");
+        const addTimezoneWrapper = document.getElementById("add-timezone-wrapper");
+        const errorMessage = document.getElementById("error-message");
+        const estBox = document.getElementById("est-box");
+        const cstBox = document.getElementById("cst-box");
+        const pstBox = document.getElementById("pst-box");
+        const liveTimeBtn = document.getElementById("live-time-btn");
+        let liveTimeInterval = null;
+        let activeInput = null;
+        let currentThemeIndex = 0;
+        let currentBorderColorClass = "border-blue-500";
+
+        // Save preferences including color for each timezone box
+        const savePreferences = () => {
+          const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+          const timezoneData = Array.from(allBoxes).map(box => ({
+            id: box.id,
+            timezone: box.dataset.timezone,
+            offset: parseFloat(box.dataset.offset),
+            color: box.style.backgroundColor || null, // Save color if set
+          }));
+          const preferences = {
+            timezones: timezoneData,
+            theme: themes[currentThemeIndex].name,
+            liveTimeEnabled: !!liveTimeInterval,
+          };
+          // Use consistent key
+          localStorage.setItem("timeZonePrefs", JSON.stringify(preferences));
+        };
+
+        const attachDragAndTouchListeners = (box) => {
+          box.addEventListener("dragstart", (e) => {
+            box.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", box.id);
+          });
+          box.addEventListener("dragend", () => {
+            box.classList.remove("dragging");
+            savePreferences();
+          });
+          box.addEventListener("dragover", (e) => {
+            e.preventDefault();
+          });
+          box.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const draggedId = e.dataTransfer.getData("text/plain");
+            const draggedBox = document.getElementById(draggedId);
+            const dropTarget = e.target.closest(".time-zone-box");
+            if (draggedBox && dropTarget && draggedBox !== dropTarget) {
+              const allBoxes = Array.from(timezoneContainer.querySelectorAll(".time-zone-box"));
+              const draggedIndex = allBoxes.indexOf(draggedBox);
+              const targetIndex = allBoxes.indexOf(dropTarget);
+              if (draggedIndex < targetIndex) {
+                timezoneContainer.insertBefore(draggedBox, dropTarget.nextSibling);
+              } else {
+                timezoneContainer.insertBefore(draggedBox, dropTarget);
+              }
+              savePreferences();
+            }
+          });
+          let touchStartY = 0;
+          let touchStartX = 0;
+          box.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            touchStartY = touch.clientY;
+            touchStartX = touch.clientX;
+            box.classList.add("dragging");
+            box.setAttribute("data-id", box.id);
+          });
+          box.addEventListener("touchmove", (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const touchY = touch.clientY;
+            const touchX = touch.clientX;
+            box.style.position = "relative";
+            box.style.top = `${touchY - touchStartY}px`;
+            box.style.left = `${touchX - touchStartX}px`;
+          });
+          box.addEventListener("touchend", (e) => {
+            box.classList.remove("dragging");
+            box.style.position = "";
+            box.style.top = "";
+            box.style.left = "";
+            const touch = e.changedTouches[0];
+            const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropBox = dropTarget.closest(".time-zone-box");
+            const draggedId = box.getAttribute("data-id");
+            const draggedBox = document.getElementById(draggedId);
+            if (draggedBox && dropBox && draggedBox !== dropBox) {
+              const allBoxes = Array.from(timezoneContainer.querySelectorAll(".time-zone-box"));
+              const draggedIndex = allBoxes.indexOf(draggedBox);
+              const targetIndex = allBoxes.indexOf(dropBox);
+              if (draggedIndex < targetIndex) {
+                timezoneContainer.insertBefore(draggedBox, dropBox.nextSibling);
+              } else {
+                timezoneContainer.insertBefore(draggedBox, dropBox);
+              }
+              savePreferences();
+            }
+          });
+        };
+
+        const attachAddTimezoneListeners = () => {
+          const addTimezoneBtnEl = document.getElementById("add-timezone-btn");
+          const timezonePopupEl = document.getElementById("timezone-popup");
+          const timezoneSearchEl = document.getElementById("timezone-search");
+          const timezoneListEl = document.getElementById("timezone-list");
+
+          if (!addTimezoneBtnEl || !timezonePopupEl || !timezoneSearchEl || !timezoneListEl) {
+            console.error("One or more DOM elements not found for timezone addition");
+            return;
+          }
+
+          addTimezoneBtnEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Add timezone button clicked");
+            timezonePopupEl.classList.toggle("hidden");
+            if (!timezonePopupEl.classList.contains("hidden")) {
+              renderTimezoneList();
+              timezoneSearchEl.focus();
+            }
+          });
+
+          timezoneSearchEl.addEventListener("input", (e) => {
+            renderTimezoneList(e.target.value);
+          });
+
+          document.addEventListener("click", (e) => {
+            if (!timezonePopupEl.contains(e.target) && e.target !== addTimezoneBtnEl) {
+              timezonePopupEl.classList.add("hidden");
+            }
+          });
+
+          timezoneListEl.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const timezoneOption = e.target.closest(".timezone-option");
+            if (!timezoneOption) return;
+            try {
+              const selectedTimezone = timezoneOption.dataset.timezone;
+              const selectedOffset = parseFloat(timezoneOption.dataset.offset);
+              if (!selectedTimezone || isNaN(selectedOffset)) {
+                throw new Error("Invalid timezone or offset");
+              }
+              const selectedTz = timezones.find(tz => tz.name === selectedTimezone);
+              if (!selectedTz) {
+                throw new Error("Timezone not found");
+              }
+              const selectedShorthand = selectedTz.shorthand;
+              const existingBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+              if (existingBoxes.length >= 5) {
+                errorMessage.textContent = "Maximum of 5 time zones reached";
+                errorMessage.classList.remove("hidden");
+                setTimeout(() => {
+                  errorMessage.classList.add("hidden");
+                  errorMessage.textContent = "Please enter a valid time";
+                }, 3000);
+                timezonePopupEl.classList.add("hidden");
+                return;
+              }
+              const newBoxId = `tz-box-${Date.now()}`;
+              const newBox = document.createElement("div");
+              newBox.className = "time-zone-box w-4/5 max-w-xs sm:flex-1 bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-[#323232] transition-colors mx-auto";
+              newBox.id = newBoxId;
+              newBox.setAttribute("draggable", "true");
+              newBox.dataset.timezone = selectedTimezone;
+              newBox.dataset.offset = selectedOffset;
+              const offsetDisplay = selectedOffset >= 0 ? `+${selectedOffset}` : selectedOffset;
+              newBox.innerHTML = `
+                <div class="timezone-header">
+                  <div class="text-xl flex items-center gap-2">
+                    <span>${selectedShorthand}</span>
+                    <span class="text-sm text-gray-400">${offsetDisplay}</span>
+                  </div>
+                  <button class="remove-btn" title="Remove Timezone">✕</button>
+                </div>
+                <div class="time-input-container hidden" id="${newBoxId}-input">
+                  <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
+                  <span>:</span>
+                  <input type="text" class="time-input minutes" maxlength="2" placeholder="MM" />
+                  <div class="ampm-container">
+                    <button class="ampm-btn" data-period="AM">AM</button>
+                    <button class="ampm-btn" data-period="PM">PM</button>
+                  </div>
+                </div>
+                <div class="time-display text-2xl font-medium text-center" id="${newBoxId}-time">--:--</div>
+                <i class="drag-handle ri-drag-move-2-line w-5 h-5 text-gray-400"></i>
+              `;
+              timezoneContainer.insertBefore(newBox, addTimezoneWrapper);
+              const newInput = document.getElementById(`${newBoxId}-input`);
+              const newDisplay = document.getElementById(`${newBoxId}-time`);
+              setupTimeBox(newBox, newInput, newDisplay);
+              updateTimes(cstInput);
+              const removeBtn = newBox.querySelector(".remove-btn");
+              removeBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                newBox.remove();
+                updateTimes(cstInput);
+                savePreferences();
+                highlightUserTimeZone();
+              });
+              const currentTheme = themes[currentThemeIndex];
+              if (currentTheme.name === "light") {
+                applyLightMode(currentTheme);
+              } else {
+                applyDarkMode(currentTheme);
+              }
+              attachDragAndTouchListeners(newBox);
+              timezonePopupEl.classList.add("hidden");
+              savePreferences();
+              highlightUserTimeZone();
+            } catch (error) {
+              console.error("Error adding timezone:", error);
+              errorMessage.textContent = "Failed to add timezone";
+              errorMessage.classList.remove("hidden");
+              setTimeout(() => {
+                errorMessage.classList.add("hidden");
+                errorMessage.textContent = "Please enter a valid time";
+              }, 3000);
+            }
+          });
+        };
+
+        // Load preferences including color for each timezone box
+        const loadPreferences = () => {
+          const savedPrefs = localStorage.getItem("timeZonePrefs");
+          if (!savedPrefs) return false;
+          const preferences = JSON.parse(savedPrefs);
+          const addTimezoneWrapperHTML = addTimezoneWrapper.outerHTML;
+          timezoneContainer.innerHTML = '';
+          // Restore boxes in the exact order saved (including custom boxes and order)
+          (preferences.timezones || []).forEach(tzData => {
+            const selectedTz = timezones.find(tz => tz.name === tzData.timezone);
+            const selectedShorthand = selectedTz ? selectedTz.shorthand : tzData.timezone;
+            const offsetDisplay = tzData.offset >= 0 ? `+${tzData.offset}` : tzData.offset;
+            const newBox = document.createElement("div");
+            newBox.className = "time-zone-box w-4/5 max-w-xs sm:flex-1 bg-gray-800 rounded-lg p-4 cursor-pointer hover:bg-[#323232] transition-colors mx-auto";
+            newBox.id = tzData.id;
+            newBox.setAttribute("draggable", "true");
+            newBox.dataset.timezone = tzData.timezone;
+            newBox.dataset.offset = tzData.offset;
+            if (tzData.color) {
+              newBox.style.backgroundColor = tzData.color;
+            }
+            newBox.innerHTML = `
+              <div class="timezone-header">
+                <div class="text-xl flex items-center gap-2">
+                  <span>${selectedShorthand}</span>
+                  <span class="text-sm text-gray-400">${offsetDisplay}</span>
+                </div>
+                <button class="remove-btn" title="Remove Timezone">✕</button>
+              </div>
+              <div class="time-input-container hidden" id="${tzData.id}-input">
+                <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
+                <span>:</span>
+                <input type="text" class="time-input minutes" maxlength="2" placeholder="MM" />
+                <div class="ampm-container">
+                  <button class="ampm-btn" data-period="AM">AM</button>
+                  <button class="ampm-btn" data-period="PM">PM</button>
+                </div>
+              </div>
+              <div class="time-display text-2xl font-medium text-center" id="${tzData.id}-time">--:--</div>
+              <i class="drag-handle ri-drag-move-2-line w-5 h-5 text-gray-400"></i>
+            `;
+            timezoneContainer.appendChild(newBox);
+            const newInput = document.getElementById(`${tzData.id}-input`);
+            const newDisplay = document.getElementById(`${tzData.id}-time`);
+            setupTimeBox(newBox, newInput, newDisplay);
+            if (tzData.id === "pst-box") {
+              pstInput = newInput;
+              pstTime.textContent = newDisplay.textContent;
+            }
+            if (tzData.id === "cst-box") {
+              cstInput = newInput;
+              cstTime.textContent = newDisplay.textContent;
+            }
+            if (tzData.id === "est-box") {
+              estInput = newInput;
+              estTime.textContent = newDisplay.textContent;
+            }
+            const removeBtn = newBox.querySelector(".remove-btn");
+            if (removeBtn) {
+              removeBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                newBox.remove();
+                updateTimes(cstInput);
+                savePreferences();
+                highlightUserTimeZone();
+              });
+            }
+            attachDragAndTouchListeners(newBox);
+          });
+          const tempDiv = document.createElement("div");
+          tempDiv.innerHTML = addTimezoneWrapperHTML;
+          const newAddTimezoneWrapper = tempDiv.firstChild;
+          timezoneContainer.appendChild(newAddTimezoneWrapper);
+          attachAddTimezoneListeners();
+          const addTimezoneBtnEl = document.getElementById("add-timezone-btn");
+          addTimezoneBtnEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            console.log("Add timezone button clicked");
+            const timezonePopupEl = document.getElementById("timezone-popup");
+            timezonePopupEl.classList.toggle("hidden");
+            if (!timezonePopupEl.classList.contains("hidden")) {
+              renderTimezoneList();
+              const timezoneSearchEl = document.getElementById("timezone-search");
+              timezoneSearchEl.focus();
+            }
+          });
+          if (preferences.theme) {
+            const theme = themes.find(t => t.name === preferences.theme);
+            if (theme) {
+              currentThemeIndex = themes.indexOf(theme);
+              if (preferences.theme === "light") {
+                applyLightMode(theme);
+              } else {
+                applyDarkMode(theme);
+              }
+            }
+          }
+          if (preferences.liveTimeEnabled) {
+            toggleLiveTime();
+          }
+          const now = new Date();
+          const currentHours = now.getHours();
+          const currentMinutes = now.getMinutes();
+          const period = currentHours >= 12 ? "PM" : "AM";
+          const displayHours = currentHours % 12 || 12;
+          cstInput.querySelector(".hours").value = displayHours.toString().padStart(2, "0");
+          cstInput.querySelector(".minutes").value = currentMinutes.toString().padStart(2, "0");
+          cstInput.querySelector(`.ampm-btn[data-period='${period}']`).classList.add("selected");
+          updateTimes(cstInput);
+          return true;
+        };
+
+        const renderTimezoneList = (searchTerm = "") => {
+          const filter = searchTerm.trim().toLowerCase();
+          const filteredTimezones = filter === ""
+            ? timezones
+            : timezones.filter((tz) =>
+                tz.name.toLowerCase().includes(filter) ||
+                tz.shorthand.toLowerCase().includes(filter)
+              );
+          const currentTheme = themes[currentThemeIndex];
+          const isLightTheme = currentTheme.name === "light";
+          timezoneListEl.innerHTML = filteredTimezones
+            .map(
+              (tz) => `
+                <button class="timezone-option flex items-center gap-2 w-full p-2 rounded hover:bg-${
+                  isLightTheme ? "gray-200" : "gray-700"
+                } transition-colors text-left" data-timezone="${tz.name}" data-offset="${tz.offset}">
+                  <i class="ri-time-line w-4 h-4 flex items-center justify-center text-${
+                    isLightTheme ? "gray-600" : "gray-400"
+                  }"></i>
+                  <span class="text-sm text-${
+                    isLightTheme ? "gray-700" : "gray-300"
+                  }">${tz.shorthand} (${tz.name})</span>
+                </button>
+              `,
+            )
+            .join("");
+        };
+
+        const getUserTimeZoneBox = () => {
+          const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const timeZoneMapping = {
+            "America/New_York": "est-box",
+            "America/Chicago": "cst-box",
+            "America/Los_Angeles": "pst-box",
+            "America/Detroit": "est-box",
+            "America/Toronto": "est-box",
+            "America/Denver": "cst-box",
+            "America/Phoenix": "pst-box",
+          };
+          for (const [tz, boxId] of Object.entries(timeZoneMapping)) {
+            if (userTimeZone.includes(tz.split('/')[1])) {
+              return document.getElementById(boxId);
+            }
+          }
+          return document.getElementById("cst-box");
+        };
+
+        const highlightUserTimeZone = () => {
+          const userBox = getUserTimeZoneBox();
+          if (userBox) {
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allBoxes.forEach(box => {
+              box.classList.remove("border-2", "border-blue-500", "border-red-500", "border-[#E2B714]", "border-[#FF79C6]", "border-[#81A1C1]", "border-[#2AA198]", "border-[#FABD2F]", "border-[#F92672]");
+            });
+            userBox.classList.add("border-2", "border-primary");
+          }
+        };
+
+        const setupTimeBox = (box, inputContainer, display) => {
+          const hoursInput = inputContainer.querySelector(".hours");
+          const minutesInput = inputContainer.querySelector(".minutes");
+          const ampmButtons = inputContainer.querySelectorAll(".ampm-btn");
+
+          box.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (liveTimeInterval || e.target.classList.contains("remove-btn")) return;
+            const allInputContainers = timezoneContainer.querySelectorAll(".time-input-container");
+            const allDisplays = timezoneContainer.querySelectorAll(".time-display");
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allInputContainers.forEach((inp) => inp.classList.add("hidden"));
+            allDisplays.forEach((disp) => disp.classList.remove("hidden"));
+            allBoxes.forEach((b) => b.classList.remove("border-2", "border-primary"));
+            inputContainer.classList.remove("hidden");
+            display.classList.add("hidden");
+            box.classList.add("border-2", "border-primary");
+            hoursInput.value = "";
+            minutesInput.value = "";
+            ampmButtons.forEach(btn => {
+              if (btn.dataset.period === "AM") {
+                btn.classList.add("selected");
+              } else {
+                btn.classList.remove("selected");
+              }
+            });
+            hoursInput.focus();
+            activeInput = inputContainer;
+          });
+
+          hoursInput.addEventListener("input", (e) => {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 2) {
+              value = value.slice(0, 2);
+            }
+            e.target.value = value;
+            if (value.length === 2) {
+              let num = parseInt(value);
+              if (num < 1 || num > 12) {
+                e.target.value = value.slice(0, 1);
+                return;
+              }
+              e.target.value = num.toString().padStart(2, "0");
+              minutesInput.value = "";
+              minutesInput.focus();
+            }
+          });
+
+          minutesInput.addEventListener("input", (e) => {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 2) {
+              value = value.slice(0, 2);
+            }
+            e.target.value = value;
+            if (value.length === 2) {
+              let num = parseInt(value);
+              if (num > 59) {
+                e.target.value = value.slice(0, 1);
+                return;
+              }
+              e.target.value = num.toString().padStart(2, "0");
+            }
+          });
+
+          ampmButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              ampmButtons.forEach(b => b.classList.remove("selected"));
+              btn.classList.add("selected");
+              if (hoursInput.value && minutesInput.value) {
+                updateTimes(inputContainer);
+                inputContainer.classList.add("hidden");
+                display.classList.remove("hidden");
+                box.classList.remove("border-2", "border-primary");
+                activeInput = null;
+                highlightUserTimeZone();
+              }
+            });
+          });
+
+          [hoursInput, minutesInput].forEach((input, index) => {
+            input.addEventListener("click", (e) => {
+              e.stopPropagation();
+              input.value = "";
+              input.focus();
+            });
+
+            input.addEventListener("keydown", (e) => {
+              if ((e.key === "Enter" || e.key === "ArrowRight") && input.value.length === 2) {
+                e.preventDefault();
+                if (index === 0) {
+                  let num = parseInt(input.value);
+                  if (num >= 1 && num <= 12) {
+                    minutesInput.value = "";
+                    minutesInput.focus();
+                  }
+                } else if (index === 1) {
+                  let num = parseInt(input.value);
+                  if (num <= 59) {
+                    // AM/PM selection handled by buttons
+                  }
+                }
+              } else if (e.key === "ArrowLeft" && index > 0) {
+                e.preventDefault();
+                hoursInput.value = "";
+                hoursInput.focus();
+              } else if ((e.key === 'a' || e.key === 'A') && ampmButtons.length) {
+                e.preventDefault();
+                ampmButtons.forEach(b => b.classList.remove('selected'));
+                const amBtn = Array.from(ampmButtons).find(b => b.dataset.period === 'AM');
+                if (amBtn) amBtn.classList.add('selected');
+                if (hoursInput.value && minutesInput.value) {
+                  updateTimes(inputContainer);
+                  inputContainer.classList.add('hidden');
+                  display.classList.remove('hidden');
+                  box.classList.remove('border-2', 'border-primary');
+                  activeInput = null;
+                  highlightUserTimeZone();
+                }
+              } else if ((e.key === 'p' || e.key === 'P') && ampmButtons.length) {
+                e.preventDefault();
+                ampmButtons.forEach(b => b.classList.remove('selected'));
+                const pmBtn = Array.from(ampmButtons).find(b => b.dataset.period === 'PM');
+                if (pmBtn) pmBtn.classList.add('selected');
+                if (hoursInput.value && minutesInput.value) {
+                  updateTimes(inputContainer);
+                  inputContainer.classList.add('hidden');
+                  display.classList.remove('hidden');
+                  box.classList.remove('border-2', 'border-primary');
+                  activeInput = null;
+                  highlightUserTimeZone();
+                }
+              } else if (!/[0-9]/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab" && e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Enter") {
+                e.preventDefault();
+              }
+            });
+          });
+        };
+        setupTimeBox(pstBox, pstInput, pstTime);
+        setupTimeBox(cstBox, cstInput, cstTime);
+        setupTimeBox(estBox, estInput, estTime);
+
+        document.addEventListener("click", (e) => {
+          if (!e.target.closest(".time-zone-box") && activeInput) {
+            const allInputContainers = timezoneContainer.querySelectorAll(".time-input-container");
+            const allDisplays = timezoneContainer.querySelectorAll(".time-display");
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allInputContainers.forEach((inp) => inp.classList.add("hidden"));
+            allDisplays.forEach((disp) => disp.classList.remove("hidden"));
+            allBoxes.forEach((b) => b.classList.remove("border-2", "border-primary"));
+            activeInput = null;
+            highlightUserTimeZone();
+          }
+        });
+
+        const updateTimes = (sourceInput) => {
+          const hours = sourceInput.querySelector(".hours").value;
+          const minutes = sourceInput.querySelector(".minutes").value;
+          const selectedPeriodBtn = sourceInput.querySelector(".ampm-btn.selected");
+          const period = selectedPeriodBtn ? selectedPeriodBtn.dataset.period : null;
+          if (!hours || !minutes || !period || !/^\d{2}$/.test(hours) || !/^\d{2}$/.test(minutes)) {
+            const allDisplays = timezoneContainer.querySelectorAll(".time-display");
+            allDisplays.forEach((disp) => (disp.textContent = "--:--"));
+            errorMessage.classList.remove("hidden");
+            return;
+          }
+          try {
+            let hoursNum = parseInt(hours);
+            const minutesNum = parseInt(minutes);
+            if (hoursNum < 1 || hoursNum > 12 || minutesNum > 59) {
+              throw new Error("Invalid time");
+            }
+            if (period === "PM" && hoursNum !== 12) hoursNum += 12;
+            if (period === "AM" && hoursNum === 12) hoursNum = 0;
+            const sourceBox = sourceInput.closest(".time-zone-box");
+            const sourceOffset = parseFloat(sourceBox.dataset.offset);
+            const baseHours = (hoursNum - sourceOffset + 24) % 24;
+            const formatTime = (hours, minutes) => {
+              const period = hours >= 12 ? "PM" : "AM";
+              let displayHours = hours % 12;
+              if (displayHours === 0) displayHours = 12;
+              return `${displayHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${period}`;
+            };
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allBoxes.forEach((box) => {
+              const offset = parseFloat(box.dataset.offset);
+              let adjustedHours = (baseHours + offset + 24) % 24;
+              const display = box.querySelector(".time-display");
+              display.textContent = formatTime(adjustedHours, minutesNum);
+            });
+            errorMessage.classList.add("hidden");
+          } catch (e) {
+            const allDisplays = timezoneContainer.querySelectorAll(".time-display");
+            allDisplays.forEach((disp) => (disp.textContent = "--:--"));
+            errorMessage.classList.remove("hidden");
+          }
+        };
+
+        [pstInput, cstInput, estInput].forEach((input) => {
+          input.querySelectorAll(".time-input").forEach((field) => {
+            field.addEventListener("input", () => updateTimes(input));
+            field.addEventListener("change", () => updateTimes(input));
+          });
+          input.querySelectorAll(".ampm-btn").forEach((btn) => {
+            btn.addEventListener("click", () => updateTimes(input));
+          });
+        });
+
+        const themes = [
+          { name: "light", bgColor: "#F5F5F5", textColor: "#333333", primary: "#3B82F6", secondary: "#2563EB", livePrimary: "#3B82F6", liveSecondary: "#2563EB", borderColor: "border-blue-500" },
+          { name: "dark", bgColor: "#000000", textColor: "#FFFFFF", primary: "#E2B714", secondary: "#D4A017", livePrimary: "#EF4444", liveSecondary: "#DC2626", borderColor: "border-red-500" },
+          { name: "serika-dark", primary: "#E2B714", secondary: "#D4A017", bgColor: "#323232", textColor: "#D1D0C5", livePrimary: "#E2B714", liveSecondary: "#D4A017", borderColor: "border-[#E2B714]" },
+          { name: "dracula", primary: "#FF79C6", secondary: "#BD93F9", bgColor: "#282A36", textColor: "#F8F8F2", livePrimary: "#FF79C6", liveSecondary: "#BD93F9", borderColor: "border-[#FF79C6]" },
+          { name: "nord", primary: "#81A1C1", secondary: "#88C0D0", bgColor: "#2E3440", textColor: "#D8DEE9", livePrimary: "#81A1C1", liveSecondary: "#88C0D0", borderColor: "border-[#81A1C1]" },
+          { name: "solarized-dark", primary: "#2AA198", secondary: "#268BD2", bgColor: "#002B36", textColor: "#839496", livePrimary: "#2AA198", liveSecondary: "#268BD2", borderColor: "border-[#2AA198]" },
+          { name: "gruvbox-dark", primary: "#FABD2F", secondary: "#D79921", bgColor: "#282828", textColor: "#EBDBB2", livePrimary: "#FABD2F", liveSecondary: "#D79921", borderColor: "border-[#FABD2F]" },
+          { name: "iceland", primary: "#C0C5CE", secondary: "#A3BE8C", bgColor: "#2E3440", textColor: "#ECEFF4", livePrimary: "#C0C5CE", liveSecondary: "#A3BE8C", borderColor: "border-[#C0C5CE]" },
+          { name: "botanical", primary: "#A3BE8C", secondary: "#88C0D0", bgColor: "#1D2521", textColor: "#D8DEE9", livePrimary: "#A3BE8C", liveSecondary: "#88C0D0", borderColor: "border-[#A3BE8C]" },
+          { name: "github", primary: "#28A745", secondary: "#2188FF", bgColor: "#0D1117", textColor: "#C9D1D9", livePrimary: "#28A745", liveSecondary: "#2188FF", borderColor: "border-[#28A745]" },
+          { name: "phantom", primary: "#BD93F9", secondary: "#FF79C6", bgColor: "#1E1E2E", textColor: "#CDD6F4", livePrimary: "#BD93F9", liveSecondary: "#FF79C6", borderColor: "border-[#BD93F9]" },
+          { name: "earthsong", primary: "#C07342", secondary: "#E0C075", bgColor: "#2F2E2D", textColor: "#E1D7C2", livePrimary: "#C07342", liveSecondary: "#E0C075", borderColor: "border-[#C07342]" },
+          { name: "catppuccin", primary: "#F5C2E7", secondary: "#CBA6F7", bgColor: "#1E1E2E", textColor: "#CDD6F4", livePrimary: "#F5C2E7", liveSecondary: "#CBA6F7", borderColor: "border-[#F5C2E7]" },
+          { name: "tokyo-night", primary: "#7AA2F7", secondary: "#BB9AF7", bgColor: "#1A1B26", textColor: "#C0CAF5", livePrimary: "#7AA2F7", liveSecondary: "#BB9AF7", borderColor: "border-[#7AA2F7]" },
+          { name: "one-dark", primary: "#61AFEF", secondary: "#E06C75", bgColor: "#282C34", textColor: "#ABB2BF", livePrimary: "#61AFEF", liveSecondary: "#E06C75", borderColor: "border-[#61AFEF]" },
+          { name: "ayu-dark", primary: "#F8C555", secondary: "#E95678", bgColor: "#1E2527", textColor: "#D4D4D4", livePrimary: "#F8C555", liveSecondary: "#E95678", borderColor: "border-[#F8C555]" },
+          { name: "ayu-mirage", primary: "#5CCFE6", secondary: "#FFD173", bgColor: "#212733", textColor: "#D9D7CE", livePrimary: "#5CCFE6", liveSecondary: "#FFD173", borderColor: "border-[#5CCFE6]" },
+          { name: "everforest", primary: "#A7C080", secondary: "#D3C6AA", bgColor: "#2D353B", textColor: "#D3C6AA", livePrimary: "#A7C080", liveSecondary: "#D3C6AA", borderColor: "border-[#A7C080]" },
+          { name: "rose-pine", primary: "#E0DEF4", secondary: "#EB6F92", bgColor: "#191724", textColor: "#E0DEF4", livePrimary: "#E0DEF4", liveSecondary: "#EB6F92", borderColor: "border-[#E0DEF4]" },
+          { name: "monokai", primary: "#F92672", secondary: "#FD971F", bgColor: "#272822", textColor: "#F8F8F2", livePrimary: "#F92672", liveSecondary: "#FD971F", borderColor: "border-[#F92672]" },
+        ];
+
+        const updateThemeColors = (primary, secondary, bgColor, textColor, livePrimary, liveSecondary, borderColor) => {
+          currentBorderColorClass = borderColor;
+          const style = document.createElement("style");
+          style.textContent = `
+            .bg-primary { background-color: ${primary} !important; }
+            .hover\\:bg-blue-600:hover { background-color: ${secondary} !important; }
+            .focus\\:ring-primary:focus { --tw-ring-color: ${primary} !important; }
+            .border-primary { border-color: ${primary} !important; }
+            #body { background-color: ${bgColor} !important; }
+            #body, .text-gray-100 { color: ${textColor} !important; }
+            #live-time-btn { background-color: ${livePrimary} !important; }
+            #live-time-btn:hover { background-color: ${liveSecondary} !important; }
+          `;
+          document.head.appendChild(style);
+          highlightUserTimeZone();
+        };
+
+        const applyDarkMode = (theme) => {
+  const fontPopup = document.getElementById('font-popup');
+  if (fontPopup) {
+    fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]', 'bg-[#1E1E1E]');
+    fontPopup.classList.add('bg-[#1E1E1E]');
+    fontPopup.setAttribute('data-theme-bg', 'dark');
+    
+    // Update header text to match theme popup in dark mode
+    const headerText = fontPopup.querySelector('div:first-child');
+    if (headerText) {
+      headerText.className = 'text-sm text-gray-400 mb-2';
+    }
+  }
+          const body = document.getElementById("body");
+          body.classList.remove("bg-gray-100", "text-gray-900");
+          body.classList.add("bg-gray-900", "text-gray-100");
+          const cards = document.querySelectorAll(".time-zone-box");
+          cards.forEach(card => {
+            card.classList.remove("bg-white", "hover:bg-gray-50", "shadow-sm");
+            card.classList.add("bg-[#1E1E1E]", "hover:bg-[#2A2A2A]");
+          });
+          const inputs = timezoneContainer.querySelectorAll(".time-input");
+          inputs.forEach(input => {
+            input.classList.remove("bg-gray-200", "text-gray-900");
+            input.classList.add("bg-transparent", "text-gray-100");
+          });
+          const timeDisplays = timezoneContainer.querySelectorAll(".time-display");
+          timeDisplays.forEach(display => {
+            display.classList.remove("text-gray-900");
+            display.classList.add("text-gray-100");
+          });
+          const popup = document.getElementById("timezone-popup");
+          popup.classList.remove("bg-white", "shadow-md");
+          popup.classList.add("bg-[#1E1E1E]");
+          const searchInput = document.getElementById("timezone-search");
+          searchInput.classList.remove("bg-gray-200", "text-gray-900");
+          searchInput.classList.add("bg-[#2A2A2A]", "text-gray-100");
+          const themePopup = document.getElementById("theme-popup");
+          themePopup.classList.remove("bg-white", "shadow-md");
+          themePopup.classList.add("bg-[#1E1E1E]");
+          const themeBtn = document.getElementById("theme-btn");
+          themeBtn.classList.remove("bg-white", "text-gray-600", "hover:text-gray-900", "shadow-sm");
+          themeBtn.classList.add("bg-[#1E1E1E]", "text-gray-400", "hover:text-gray-300");
+          const resetBtn = document.getElementById("reset-btn");
+          resetBtn.classList.remove("bg-white", "text-gray-600", "hover:text-gray-900", "shadow-sm");
+          resetBtn.classList.add("bg-[#1E1E1E]", "text-gray-400", "hover:text-gray-300");
+          const version = document.querySelector(".fixed.bottom-4.right-4 > div:last-child");
+          version.classList.remove("bg-white", "text-gray-600", "shadow-sm");
+          version.classList.add("bg-[#1E1E1E]", "text-gray-400");
+          const liveTimeBtn = document.getElementById("live-time-btn");
+          liveTimeBtn.classList.remove("text-white");
+          liveTimeBtn.classList.add("text-gray-900");
+          updateThemeColors(theme.primary, theme.secondary, theme.bgColor, theme.textColor, theme.livePrimary, theme.liveSecondary, theme.borderColor);
+        };
+
+        const applyLightMode = (theme) => {
+  const fontPopup = document.getElementById('font-popup');
+  if (fontPopup) {
+    fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]');
+    fontPopup.classList.add('bg-white');
+    fontPopup.setAttribute('data-theme-bg', 'light');
+    
+    // Update header text to match theme popup in light mode
+    const headerText = fontPopup.querySelector('div:first-child');
+    if (headerText) {
+      headerText.className = 'text-sm text-gray-600 mb-2';
+    }
+  }
+          const body = document.getElementById("body");
+          body.classList.remove("bg-gray-900", "text-gray-100");
+          body.classList.add("bg-gray-100", "text-gray-900");
+          const cards = document.querySelectorAll(".time-zone-box");
+          cards.forEach(card => {
+            card.classList.remove("bg-[#1E1E1E]", "hover:bg-[#2A2A2A]");
+            card.classList.add("bg-white", "hover:bg-gray-50", "shadow-sm");
+          });
+          const inputs = timezoneContainer.querySelectorAll(".time-input");
+          inputs.forEach(input => {
+            input.classList.remove("bg-transparent", "text-gray-100");
+            input.classList.add("bg-gray-200", "text-gray-900");
+          });
+          const timeDisplays = timezoneContainer.querySelectorAll(".time-display");
+          timeDisplays.forEach(display => {
+            display.classList.remove("text-gray-100");
+            display.classList.add("text-gray-900");
+          });
+          const popup = document.getElementById("timezone-popup");
+          popup.classList.remove("bg-[#1E1E1E]");
+          popup.classList.add("bg-white", "shadow-md");
+          const searchInput = document.getElementById("timezone-search");
+          searchInput.classList.remove("bg-[#2A2A2A]", "text-gray-100");
+          searchInput.classList.add("bg-gray-200", "text-gray-900");
+          const themePopup = document.getElementById("theme-popup");
+          themePopup.classList.remove("bg-[#1E1E1E]");
+          themePopup.classList.add("bg-white", "shadow-md");
+          const themeBtn = document.getElementById("theme-btn");
+          themeBtn.classList.remove("bg-[#1E1E1E]", "text-gray-400", "hover:text-gray-300");
+          themeBtn.classList.add("bg-white", "text-gray-600", "hover:text-gray-900", "shadow-sm");
+          const resetBtn = document.getElementById("reset-btn");
+          resetBtn.classList.remove("bg-[#1E1E1E]", "text-gray-400", "hover:text-gray-300");
+          resetBtn.classList.add("bg-white", "text-gray-600", "hover:text-gray-900", "shadow-sm");
+          const version = document.querySelector(".fixed.bottom-4.right-4 > div:last-child");
+          version.classList.remove("bg-[#1E1E1E]", "text-gray-400");
+          version.classList.add("bg-white", "text-gray-600", "shadow-sm");
+          const liveTimeBtn = document.getElementById("live-time-btn");
+          liveTimeBtn.classList.remove("text-gray-900");
+          liveTimeBtn.classList.add("text-white");
+          updateThemeColors(theme.primary, theme.secondary, theme.bgColor, theme.textColor, theme.livePrimary, theme.liveSecondary, theme.borderColor);
+        };
+
+        const themeBtn = document.getElementById("theme-btn");
+        const themePopup = document.getElementById("theme-popup");
+        themeBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  // If font popup is open, close it
+  if (!fontPopup.classList.contains('hidden')) {
+    fontPopup.classList.add('hidden');
+    syncFontBtnWithTheme();
+  }
+  themePopup.classList.toggle("hidden");
+});
+
+        // Reset to Default Button
+        const resetBtn = document.getElementById("reset-btn");
+        resetBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          // Clear preferences
+          localStorage.removeItem("timeZonePrefs");
+          window.location.reload();
+        });
+
+        // Font Switcher
+        const fontBtn = document.getElementById("font-btn");
+        const fontPopup = document.getElementById("font-popup");
+        const fontList = document.getElementById("font-list");
+        const availableFonts = [
+          {
+            label: 'Dokdo',
+            css: "'Dokdo', cursive",
+            import: "https://fonts.googleapis.com/css2?family=Dokdo&display=swap"
+          },
+          {
+            label: 'Fira Sans',
+            css: "'Fira Sans', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700&display=swap"
+          },
+          {
+            label: 'Hubballi',
+            css: "'Hubballi', cursive",
+            import: "https://fonts.googleapis.com/css2?family=Hubballi&display=swap"
+          },
+          {
+            label: 'Inter',
+            css: "'Inter', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+          },
+          {
+            label: 'Lato',
+            css: "'Lato', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
+          },
+          {
+            label: 'Montserrat Alternates',
+            css: "'Montserrat Alternates', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;700&display=swap"
+          },
+          {
+            label: 'Nanum Myeongjo',
+            css: "'Nanum Myeongjo', serif",
+            import: "https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap"
+          },
+          {
+            label: 'Nunito',
+            css: "'Nunito', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+          },
+          {
+            label: 'Open Sans',
+            css: "'Open Sans', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
+          },
+          {
+            label: 'Poppins',
+            css: "'Poppins', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+          },
+          {
+            label: 'Roboto',
+            css: "'Roboto', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          },
+          {
+            label: 'Source Sans Pro',
+            css: "'Source Sans Pro', sans-serif",
+            import: "https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap"
+          },
+          {
+            label: 'System UI',
+            css: "system-ui, sans-serif",
+            import: null
+          }
+        ].sort((a, b) => a.label.localeCompare(b.label));
+
+        // Helper: add Google Fonts <link> only once
+        function ensureFontLoaded(font) {
+          if (!font.import) return;
+          if (document.querySelector(`link[data-font='${font.label}']`)) return;
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = font.import;
+          link.setAttribute('data-font', font.label);
+          document.head.appendChild(link);
+        }
+
+        // Render font options
+        function renderFontList(selectedFont) {
+  fontList.innerHTML = '';
+  const currentTheme = themes[currentThemeIndex];
+  const isLight = currentTheme.name === 'light';
+  availableFonts.forEach(font => {
+    const btn = document.createElement('button');
+    // Match theme-option logic exactly
+    btn.className = `theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors`;
+    if (isLight) {
+      btn.classList.remove('hover:bg-gray-700');
+      btn.classList.add('hover:bg-gray-100');
+    }
+    btn.textContent = font.label;
+    btn.style.fontFamily = font.css;
+    
+    // Add text color class exactly like theme options
+    const textSpan = document.createElement('span');
+    textSpan.className = `text-sm ${isLight ? 'text-gray-700' : 'text-gray-300'}`;
+    textSpan.textContent = font.label;
+    textSpan.style.fontFamily = font.css;
+    
+    btn.textContent = '';
+    btn.appendChild(textSpan);
+    
+    btn.addEventListener('click', () => {
+      setFont(font.label);
+      fontPopup.classList.add('hidden');
+    });
+    fontList.appendChild(btn);
+  });
+  
+  // Update popup container to match theme-popup exactly
+  if (fontPopup) {
+    // Don't remove the hidden class - just update the styling
+    const isHidden = fontPopup.classList.contains('hidden');
+    
+    // Apply base classes without affecting visibility
+    fontPopup.classList.remove('bg-white', 'bg-gray-800');
+    fontPopup.classList.add('absolute', 'bottom-12', 'right-0', 'rounded-lg', 'p-3', 'w-48', 'shadow-lg', 'z-50');
+    fontPopup.classList.add(isLight ? 'bg-white' : 'bg-gray-800');
+    
+    // Make sure hidden state is preserved
+    if (isHidden) {
+      fontPopup.classList.add('hidden');
+    } else {
+      fontPopup.classList.remove('hidden');
+    }
+    
+    // Update header text to match theme popup
+    const headerText = fontPopup.querySelector('div:first-child');
+    if (headerText) {
+      headerText.className = 'text-sm mb-2';
+      headerText.classList.add(isLight ? 'text-gray-600' : 'text-gray-400');
+    }
+  }
+}
+
+        // Apply font site-wide
+        function setFont(fontLabel) {
+          const font = availableFonts.find(f => f.label === fontLabel);
+          if (!font) return;
+          ensureFontLoaded(font);
+          document.documentElement.style.setProperty('font-family', font.css);
+          document.body.style.setProperty('font-family', font.css);
+          // Also update global CSS rule
+          let styleEl = document.getElementById('dynamic-font-style');
+          if (!styleEl) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'dynamic-font-style';
+            document.head.appendChild(styleEl);
+          }
+          styleEl.innerHTML = `html, body, * { font-family: ${font.css} !important; }`;
+          localStorage.setItem('selectedFont', fontLabel);
+        }
+
+        // Font popup toggle
+        function syncFontBtnWithTheme() {
+          // Match theme-btn classes
+          const themeBtn = document.getElementById('theme-btn');
+          if (!themeBtn) return;
+          fontBtn.className = themeBtn.className;
+          // Also match icon color
+          const themeIcon = themeBtn.querySelector('i');
+          const fontIcon = document.getElementById('font-btn-icon');
+          if (themeIcon && fontIcon) {
+            fontIcon.className = themeIcon.className.replace('ri-palette-line', 'ri-font-size-2');
+          }
+        }
+        fontBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  // If theme popup is open, close it
+  if (!themePopup.classList.contains('hidden')) {
+    themePopup.classList.add('hidden');
+  }
+  fontPopup.classList.toggle('hidden');
+  // Exactly match theme popup behavior
+  syncFontBtnWithTheme();
+  // Highlight when open (no yellow highlight, just match palette icon)
+  if (!fontPopup.classList.contains('hidden')) {
+    fontBtn.classList.add('bg-gray-700');
+  } else {
+    syncFontBtnWithTheme();
+  }
+  renderFontList(localStorage.getItem('selectedFont') || availableFonts[0].label);
+});
+        document.addEventListener('click', (e) => {
+          if (!fontPopup.contains(e.target) && e.target !== fontBtn) {
+            fontPopup.classList.add('hidden');
+            syncFontBtnWithTheme();
+          }
+        });
+        // Sync on theme change
+        const origApplyLightMode = typeof applyLightMode === 'function' ? applyLightMode : null;
+        const origApplyDarkMode = typeof applyDarkMode === 'function' ? applyDarkMode : null;
+        window.applyLightMode = function(...args) {
+          if (origApplyLightMode) origApplyLightMode.apply(this, args);
+          setTimeout(syncFontBtnWithTheme, 0);
+        };
+        window.applyDarkMode = function(...args) {
+          if (origApplyDarkMode) origApplyDarkMode.apply(this, args);
+          setTimeout(syncFontBtnWithTheme, 0);
+        };
+        // Initial sync
+        setTimeout(syncFontBtnWithTheme, 0);
+
+        // On load: restore font
+        const savedFont = localStorage.getItem('selectedFont');
+        if (savedFont) setFont(savedFont);
+        else setFont(availableFonts[0].label);
+
+        document.addEventListener("click", (e) => {
+          if (!themePopup.contains(e.target) && e.target !== themeBtn) {
+            themePopup.classList.add("hidden");
+          }
+        });
+
+        document.querySelectorAll(".theme-option").forEach((option) => {
+          option.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const themeName = option.dataset.theme;
+            const theme = themes.find((t) => t.name === themeName);
+            if (theme) {
+              currentThemeIndex = themes.indexOf(theme);
+              if (themeName === "light") {
+                applyLightMode(theme);
+              } else {
+                applyDarkMode(theme);
+              }
+              savePreferences();
+            }
+            themePopup.classList.add("hidden");
+          });
+        });
+
+        const toggleLiveTime = () => {
+          if (liveTimeInterval) {
+            clearInterval(liveTimeInterval);
+            liveTimeInterval = null;
+            liveTimeBtn.classList.remove("bg-green-500");
+            liveTimeBtn.classList.add("bg-primary");
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allBoxes.forEach((box) =>
+              box.classList.remove("opacity-50", "cursor-not-allowed"),
+            );
+          } else {
+            activeInput = null;
+            const allInputContainers = timezoneContainer.querySelectorAll(".time-input-container");
+            const allDisplays = timezoneContainer.querySelectorAll(".time-display");
+            const allBoxes = timezoneContainer.querySelectorAll(".time-zone-box");
+            allInputContainers.forEach((inp) => inp.classList.add("hidden"));
+            allDisplays.forEach((disp) => disp.classList.remove("hidden"));
+            allBoxes.forEach((box) => {
+              box.classList.remove("border-2", "border-primary");
+              box.classList.add("opacity-50", "cursor-not-allowed");
+            });
+            liveTimeInterval = setInterval(() => {
+              const now = new Date();
+              const currentHours = now.getHours();
+              const currentMinutes = now.getMinutes();
+              const period = currentHours >= 12 ? "PM" : "AM";
+              const displayHours = currentHours % 12 || 12;
+              cstInput.querySelector(".hours").value = displayHours.toString().padStart(2, "0");
+              cstInput.querySelector(".minutes").value = currentMinutes.toString().padStart(2, "0");
+              const ampmButtons = cstInput.querySelectorAll(".ampm-btn");
+              ampmButtons.forEach(btn => {
+                if (btn.dataset.period === period) {
+                  btn.classList.add("selected");
+                } else {
+                  btn.classList.remove("selected");
+                }
+              });
+              updateTimes(cstInput);
+            }, 1000);
+            liveTimeBtn.classList.remove("bg-primary");
+            liveTimeBtn.classList.add("bg-green-500");
+            highlightUserTimeZone();
+          }
+          savePreferences();
+        };
+        liveTimeBtn.addEventListener("click", toggleLiveTime);
+
+        [pstBox, cstBox, estBox].forEach(box => {
+          attachDragAndTouchListeners(box);
+        });
+
+        const preferencesLoaded = loadPreferences();
+        if (!preferencesLoaded) {
+          const lightTheme = themes.find(theme => theme.name === "light");
+          applyLightMode(lightTheme);
+          highlightUserTimeZone();
+          const now = new Date();
+          const currentHours = now.getHours();
+          const currentMinutes = now.getMinutes();
+          const period = currentHours >= 12 ? "PM" : "AM";
+          const displayHours = currentHours % 12 || 12;
+          cstInput.querySelector(".hours").value = displayHours.toString().padStart(2, "0");
+          cstInput.querySelector(".minutes").value = currentMinutes.toString().padStart(2, "0");
+          cstInput.querySelector(`.ampm-btn[data-period='${period}']`).classList.add("selected");
+          updateTimes(cstInput);
+          savePreferences();
+        }
+
+        attachAddTimezoneListeners();
+
+        // Enable remove for all time-zone boxes, including defaults
+        timezoneContainer.addEventListener('click', function(e) {
+          if (e.target.classList.contains('remove-btn')) {
+            e.stopPropagation();
+            const box = e.target.closest('.time-zone-box');
+            if (box) {
+              box.remove();
+              savePreferences && savePreferences(); // update preferences if function exists
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
