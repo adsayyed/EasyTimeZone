@@ -686,24 +686,34 @@
         // Load preferences including color for each timezone box
         const loadPreferences = () => {
           const savedPrefs = localStorage.getItem("timeZonePrefs");
+          timezoneContainer.innerHTML = '';
           if (!savedPrefs) {
-            // On first load, leave default HTML as-is. Attach listeners only.
-            setupTimeBox(pstBox, pstInput, pstTime);
-            setupTimeBox(cstBox, cstInput, cstTime);
-            setupTimeBox(estBox, estInput, estTime);
-            attachDragAndTouchListeners(pstBox);
-            attachDragAndTouchListeners(cstBox);
-            attachDragAndTouchListeners(estBox);
+            // Render default boxes if no preferences
+            // Clone the default boxes to avoid DOM detachment issues
+            const newPstBox = pstBox.cloneNode(true);
+            const newCstBox = cstBox.cloneNode(true);
+            const newEstBox = estBox.cloneNode(true);
+            timezoneContainer.appendChild(newPstBox);
+            timezoneContainer.appendChild(newCstBox);
+            timezoneContainer.appendChild(newEstBox);
+            timezoneContainer.appendChild(addTimezoneWrapper);
+            // Re-attach listeners and update references
+            pstInput = newPstBox.querySelector('.time-input-container');
+            cstInput = newCstBox.querySelector('.time-input-container');
+            estInput = newEstBox.querySelector('.time-input-container');
+            pstTime = newPstBox.querySelector('.time-display');
+            cstTime = newCstBox.querySelector('.time-display');
+            estTime = newEstBox.querySelector('.time-display');
+            setupTimeBox(newPstBox, pstInput, pstTime);
+            setupTimeBox(newCstBox, cstInput, cstTime);
+            setupTimeBox(newEstBox, estInput, estTime);
+            attachDragAndTouchListeners(newPstBox);
+            attachDragAndTouchListeners(newCstBox);
+            attachDragAndTouchListeners(newEstBox);
             attachRemoveTimezoneListeners();
             renderTimezoneList();
-            savePreferences();
-            // Immediately reload preferences and UI from saved state, just like after reset
-            loadPreferences._fromFirstLoad = true;
-            loadPreferences();
             return false;
           }
-          timezoneContainer.innerHTML = '';
-
           const preferences = JSON.parse(savedPrefs);
           const addTimezoneWrapperHTML = addTimezoneWrapper.outerHTML;
           // Restore boxes in the exact order saved (including custom boxes and order)
@@ -1565,9 +1575,6 @@
           updateTimes(cstInput);
           renderTimezoneList();
           savePreferences();
-        } else {
-          // If preferences loaded, still ensure timezone list is populated for first click
-          renderTimezoneList();
         }
 
         attachAddTimezoneListeners();
