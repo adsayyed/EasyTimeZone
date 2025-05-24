@@ -25,45 +25,25 @@
       #timezone-list::-webkit-scrollbar, #theme-list::-webkit-scrollbar {
         display: none;
       }
-      .drag-handle {
+      .drag-handle, .remove-btn {
         display: none;
         cursor: pointer;
+      }
+      .drag-handle {
         position: absolute;
         bottom: 4px;
         right: 4px;
         color: #A1A1AA;
       }
       .remove-btn {
-        color: #EF4444 !important;
-        background: none !important;
-        border: none !important;
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 22px !important;
-        line-height: 28px !important;
-        margin-left: 0.5rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        cursor: pointer !important;
-        border-radius: 50% !important;
-        transition: background 0.2s, opacity 0.15s;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
+        color: #EF4444;
+        font-size: 1rem;
+        line-height: 1;
+        margin-left: 0.5rem;
       }
-      .remove-btn:focus {
-        outline: 2px solid #EF4444;
-        outline-offset: 2px;
-      }
-      .remove-btn:hover {
-        background: rgba(239,68,68,0.1) !important;
-      }
+      .time-zone-box:hover .drag-handle,
       .time-zone-box:hover .remove-btn {
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
+        display: block;
       }
       .time-zone-box {
         position: relative;
@@ -1234,12 +1214,7 @@
           if (typeof availableFonts !== 'undefined' && typeof setFont === 'function') {
             setFont('System UI'); // Set to system-ui as default
           }
-          setTimeout(() => {
-            window.location.reload();
-            setTimeout(() => {
-              attachRemoveTimezoneListeners(); // Ensure remove X listeners always re-attach after reload
-            }, 100);
-          }, 50); // Give time for any pending UI updates
+          window.location.reload();
         });
 
         // Font Switcher
@@ -1529,7 +1504,6 @@
         });
 
         const preferencesLoaded = loadPreferences();
-        attachRemoveTimezoneListeners();
         if (!preferencesLoaded) {
           const lightTheme = themes.find(theme => theme.name === "light");
           applyLightMode(lightTheme);
@@ -1548,33 +1522,17 @@
 
         attachAddTimezoneListeners();
 
-        // Utility to attach remove handler to all remove-btns
-        function attachRemoveTimezoneListeners() {
-          document.querySelectorAll('.remove-btn').forEach(btn => {
-            btn.onclick = function(e) {
-              e.stopPropagation();
-              const box = e.target.closest('.time-zone-box');
-              if (box) {
-                box.remove();
-                if (typeof savePreferences === 'function') savePreferences();
-              }
-            };
-          });
-        }
-
-        // Call after loading preferences or rendering new timezones
-        attachRemoveTimezoneListeners();
-
-        // Also call after adding a new timezone
-        const origAttachAddTimezoneListeners = attachAddTimezoneListeners;
-        attachAddTimezoneListeners = function(...args) {
-          origAttachAddTimezoneListeners.apply(this, args);
-          setTimeout(attachRemoveTimezoneListeners, 0);
-        };
-
-        // After reload, DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', attachRemoveTimezoneListeners);
-
+        // Enable remove for all time-zone boxes, including defaults
+        timezoneContainer.addEventListener('click', function(e) {
+          if (e.target.classList.contains('remove-btn')) {
+            e.stopPropagation();
+            const box = e.target.closest('.time-zone-box');
+            if (box) {
+              box.remove();
+              savePreferences && savePreferences(); // update preferences if function exists
+            }
+          }
+        });
       });
     </script>
   </body>
