@@ -689,28 +689,11 @@
           timezoneContainer.innerHTML = '';
           if (!savedPrefs) {
             // Render default boxes if no preferences
-            // Clone the default boxes to avoid DOM detachment issues
-            const newPstBox = pstBox.cloneNode(true);
-            const newCstBox = cstBox.cloneNode(true);
-            const newEstBox = estBox.cloneNode(true);
-            timezoneContainer.appendChild(newPstBox);
-            timezoneContainer.appendChild(newCstBox);
-            timezoneContainer.appendChild(newEstBox);
+            [pstBox, cstBox, estBox].forEach(box => {
+              timezoneContainer.appendChild(box);
+            });
             timezoneContainer.appendChild(addTimezoneWrapper);
-            // Re-attach listeners and update references
-            pstInput = newPstBox.querySelector('.time-input-container');
-            cstInput = newCstBox.querySelector('.time-input-container');
-            estInput = newEstBox.querySelector('.time-input-container');
-            pstTime = newPstBox.querySelector('.time-display');
-            cstTime = newCstBox.querySelector('.time-display');
-            estTime = newEstBox.querySelector('.time-display');
-            setupTimeBox(newPstBox, pstInput, pstTime);
-            setupTimeBox(newCstBox, cstInput, cstTime);
-            setupTimeBox(newEstBox, estInput, estTime);
-            attachDragAndTouchListeners(newPstBox);
-            attachDragAndTouchListeners(newCstBox);
-            attachDragAndTouchListeners(newEstBox);
-            attachRemoveTimezoneListeners();
+            // Ensure popup is always populated
             renderTimezoneList();
             return false;
           }
