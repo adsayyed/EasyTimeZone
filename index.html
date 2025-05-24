@@ -34,29 +34,25 @@
         color: #A1A1AA;
       }
       .remove-btn {
-  all: unset;
-  color: #EF4444 !important;
-  background: none !important;
-  border: none !important;
-  width: 28px !important;
-  height: 28px !important;
-  font-size: 22px !important;
-  line-height: 28px !important;
-  margin-left: 0.5rem !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-  cursor: pointer !important;
-  border-radius: 50% !important;
-  transition: background 0.2s, opacity 0.15s;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  box-sizing: border-box !important;
-  font-family: inherit !important;
-  font-weight: 400 !important;
-}
+        color: #EF4444 !important;
+        background: none !important;
+        border: none !important;
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 22px !important;
+        line-height: 28px !important;
+        margin-left: 0.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        border-radius: 50% !important;
+        transition: background 0.2s, opacity 0.15s;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
       .remove-btn:focus {
         outline: 2px solid #EF4444;
         outline-offset: 2px;
@@ -634,7 +630,7 @@
                     <span>${selectedShorthand}</span>
                     <span class="text-sm text-gray-400">${offsetDisplay}</span>
                   </div>
-                  <button class="remove-btn" title="Remove Timezone" tabindex="0">&times;</button>
+                  <button class="remove-btn" title="Remove Timezone">✕</button>
                 </div>
                 <div class="time-input-container hidden" id="${newBoxId}-input">
                   <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
@@ -686,19 +682,10 @@
         // Load preferences including color for each timezone box
         const loadPreferences = () => {
           const savedPrefs = localStorage.getItem("timeZonePrefs");
-          timezoneContainer.innerHTML = '';
-          if (!savedPrefs) {
-            // Render default boxes if no preferences
-            [pstBox, cstBox, estBox].forEach(box => {
-              timezoneContainer.appendChild(box);
-            });
-            timezoneContainer.appendChild(addTimezoneWrapper);
-            // Ensure popup is always populated
-            renderTimezoneList();
-            return false;
-          }
+          if (!savedPrefs) return false;
           const preferences = JSON.parse(savedPrefs);
           const addTimezoneWrapperHTML = addTimezoneWrapper.outerHTML;
+          timezoneContainer.innerHTML = '';
           // Restore boxes in the exact order saved (including custom boxes and order)
           (preferences.timezones || []).forEach(tzData => {
             const selectedTz = timezones.find(tz => tz.name === tzData.timezone);
@@ -719,7 +706,7 @@
                   <span>${selectedShorthand}</span>
                   <span class="text-sm text-gray-400">${offsetDisplay}</span>
                 </div>
-                <button class="remove-btn" title="Remove Timezone" tabindex="0">&times;</button>
+                <button class="remove-btn" title="Remove Timezone">✕</button>
               </div>
               <div class="time-input-container hidden" id="${tzData.id}-input">
                 <input type="text" class="time-input hours" maxlength="2" placeholder="HH" />
@@ -1556,7 +1543,6 @@
           cstInput.querySelector(".minutes").value = currentMinutes.toString().padStart(2, "0");
           cstInput.querySelector(`.ampm-btn[data-period='${period}']`).classList.add("selected");
           updateTimes(cstInput);
-          renderTimezoneList();
           savePreferences();
         }
 
