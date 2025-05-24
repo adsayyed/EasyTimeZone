@@ -1521,6 +1521,8 @@
         }
 
         attachAddTimezoneListeners();
+        // Initialize the timezone list on page load
+        renderTimezoneList();
 
         // Enable remove for all time-zone boxes, including defaults
         timezoneContainer.addEventListener('click', function(e) {
