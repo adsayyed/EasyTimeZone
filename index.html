@@ -229,14 +229,15 @@
             <i class="ri-add-line w-6 h-6 flex items-center justify-center"></i>
           </button>
           <div id="timezone-popup" class="hidden absolute top-14 left-0 sm:top-0 sm:right-[-270px] bg-gray-800 rounded-lg p-3 w-64 shadow-lg">
-            <div class="mb-3">
-              <div class="relative">
-                <input type="text" id="timezone-search" placeholder="Search timezone..." class="w-full bg-gray-700 text-gray-100 px-3 py-2 pr-8 rounded text-sm border-none" />
-                <i class="ri-search-line absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 flex items-center justify-center"></i>
-              </div>
-            </div>
-            <div class="space-y-1 overflow-y-scroll h-[200px]" id="timezone-list"></div>
-          </div>
+  <div class="text-sm text-gray-400 mb-2" id="timezone-popup-header">Select Timezone</div>
+  <div class="mb-3">
+    <div class="relative">
+      <input type="text" id="timezone-search" placeholder="Search timezone..." class="w-full bg-gray-700 text-gray-100 px-3 py-2 pr-8 rounded text-sm border-none" />
+      <i class="ri-search-line absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 flex items-center justify-center"></i>
+    </div>
+  </div>
+  <div class="space-y-1 overflow-y-scroll h-[200px]" id="timezone-list"></div>
+</div>
         </div>
       </div>
       <div id="error-message" class="mt-4 text-red-400 text-center hidden">
@@ -260,7 +261,7 @@
             </div>
           </div>
           <div id="theme-popup" class="hidden absolute bottom-12 right-0 bg-gray-800 rounded-lg p-3 w-48 shadow-lg">
-            <div class="text-sm text-gray-400 mb-2">Select Theme</div>
+  <div class="text-sm text-gray-400 mb-2" id="theme-popup-header">Select Theme</div>
             <div class="space-y-2 overflow-y-scroll h-[200px]" id="theme-list">
               <button class="theme-option flex items-center gap-2 w-full p-2 rounded hover:bg-gray-700 transition-colors" data-theme="light">
                 <div class="w-4 h-4 rounded-full bg-[#F5F5F5]"></div>
@@ -776,32 +777,26 @@
         };
 
         const renderTimezoneList = (searchTerm = "") => {
-          const filter = searchTerm.trim().toLowerCase();
-          const filteredTimezones = filter === ""
-            ? timezones
-            : timezones.filter((tz) =>
-                tz.name.toLowerCase().includes(filter) ||
-                tz.shorthand.toLowerCase().includes(filter)
-              );
-          const currentTheme = themes[currentThemeIndex];
-          const isLightTheme = currentTheme.name === "light";
-          timezoneListEl.innerHTML = filteredTimezones
-            .map(
-              (tz) => `
-                <button class="timezone-option flex items-center gap-2 w-full p-2 rounded hover:bg-${
-                  isLightTheme ? "gray-200" : "gray-700"
-                } transition-colors text-left" data-timezone="${tz.name}" data-offset="${tz.offset}">
-                  <i class="ri-time-line w-4 h-4 flex items-center justify-center text-${
-                    isLightTheme ? "gray-600" : "gray-400"
-                  }"></i>
-                  <span class="text-sm text-${
-                    isLightTheme ? "gray-700" : "gray-300"
-                  }">${tz.shorthand} (${tz.name})</span>
-                </button>
-              `,
-            )
-            .join("");
-        };
+  const filter = searchTerm.trim().toLowerCase();
+  const filteredTimezones = filter === ""
+    ? timezones
+    : timezones.filter((tz) =>
+        tz.name.toLowerCase().includes(filter) ||
+        tz.shorthand.toLowerCase().includes(filter)
+      );
+  const currentTheme = themes[currentThemeIndex];
+  const isLightTheme = currentTheme.name === "light";
+  timezoneListEl.innerHTML = filteredTimezones
+    .map(
+      (tz) => `
+        <button class="theme-option flex items-center gap-2 w-full p-2 rounded ${isLightTheme ? 'hover:bg-gray-100' : 'hover:bg-gray-700'} transition-colors text-left" data-timezone="${tz.name}" data-offset="${tz.offset}">
+          <i class="ri-time-line w-4 h-4 flex items-center justify-center ${isLightTheme ? 'text-gray-600' : 'text-gray-400'}"></i>
+          <span class="text-sm ${isLightTheme ? 'text-gray-700' : 'text-gray-300'}">${tz.shorthand} (${tz.name})</span>
+        </button>
+      `,
+    )
+    .join("");
+};
 
         const getUserTimeZoneBox = () => {
           const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -1087,14 +1082,18 @@
     fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]', 'bg-[#1E1E1E]');
     fontPopup.classList.add('bg-[#1E1E1E]');
     fontPopup.setAttribute('data-theme-bg', 'dark');
-    
     // Update header text to match theme popup in dark mode
     const headerText = fontPopup.querySelector('div:first-child');
     if (headerText) {
       headerText.className = 'text-sm text-gray-400 mb-2';
     }
   }
-          const body = document.getElementById("body");
+  // Also update theme and timezone popup headers for dark mode
+  const themePopupHeader = document.getElementById('theme-popup-header');
+  if (themePopupHeader) themePopupHeader.className = 'text-sm text-gray-400 mb-2';
+  const timezonePopupHeader = document.getElementById('timezone-popup-header');
+  if (timezonePopupHeader) timezonePopupHeader.className = 'text-sm text-gray-400 mb-2';
+  const body = document.getElementById("body");
           body.classList.remove("bg-gray-100", "text-gray-900");
           body.classList.add("bg-gray-900", "text-gray-100");
           const cards = document.querySelectorAll(".time-zone-box");
@@ -1142,14 +1141,18 @@
     fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]', 'bg-[#1E1E1E]');
     fontPopup.classList.add('bg-white');
     fontPopup.setAttribute('data-theme-bg', 'light');
-    
     // Update header text to match theme popup in light mode
     const headerText = fontPopup.querySelector('div:first-child');
     if (headerText) {
       headerText.className = 'text-sm text-gray-600 mb-2';
     }
   }
-          const body = document.getElementById("body");
+  // Also update theme and timezone popup headers for light mode
+  const themePopupHeader = document.getElementById('theme-popup-header');
+  if (themePopupHeader) themePopupHeader.className = 'text-sm text-gray-600 mb-2';
+  const timezonePopupHeader = document.getElementById('timezone-popup-header');
+  if (timezonePopupHeader) timezonePopupHeader.className = 'text-sm text-gray-600 mb-2';
+  const body = document.getElementById("body");
           body.classList.remove("bg-gray-900", "text-gray-100");
           body.classList.add("bg-gray-100", "text-gray-900");
           const cards = document.querySelectorAll(".time-zone-box");
