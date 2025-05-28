@@ -18,11 +18,11 @@
       html, body, * { font-family: system-ui, sans-serif !important; font-weight: 400; }
       h1 { font-weight: 700; }
       .text-xl, .text-2xl, .text-3xl { font-weight: 500; }
-      #timezone-list, #theme-list {
+      #timezone-list, #theme-list, #font-list {
         scrollbar-width: none;
         -ms-overflow-style: none;
       }
-      #timezone-list::-webkit-scrollbar, #theme-list::-webkit-scrollbar {
+      #timezone-list::-webkit-scrollbar, #theme-list::-webkit-scrollbar, #font-list::-webkit-scrollbar {
         display: none;
       }
       .drag-handle, .remove-btn {
@@ -44,6 +44,10 @@
       .time-zone-box:hover .drag-handle,
       .time-zone-box:hover .remove-btn {
         display: block;
+      }
+      /* Ensure theme option text matches font option color in light mode */
+      #theme-popup.bg-white .theme-option span {
+        color: #d1d5db !important;
       }
       .time-zone-box {
         position: relative;
@@ -1135,7 +1139,7 @@
         const applyLightMode = (theme) => {
   const fontPopup = document.getElementById('font-popup');
   if (fontPopup) {
-    fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]');
+    fontPopup.classList.remove('bg-gray-800', 'bg-white', 'bg-[#23272e]', 'bg-[#1E1E1E]');
     fontPopup.classList.add('bg-white');
     fontPopup.setAttribute('data-theme-bg', 'light');
     
@@ -1222,8 +1226,6 @@
         const fontPopup = document.getElementById("font-popup");
         const fontList = document.getElementById("font-list");
         const availableFonts = [
-
-
           {
             label: 'Fira Sans',
             css: "'Fira Sans', sans-serif",
@@ -1521,8 +1523,7 @@
         }
 
         attachAddTimezoneListeners();
-        // Initialize the timezone list on page load
-        renderTimezoneList();
+        renderTimezoneList(); // Populate timezone list on initial load
 
         // Enable remove for all time-zone boxes, including defaults
         timezoneContainer.addEventListener('click', function(e) {
