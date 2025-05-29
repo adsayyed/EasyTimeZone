@@ -556,10 +556,13 @@
 
           addTimezoneBtnEl.addEventListener("click", (e) => {
             e.stopPropagation();
-            console.log("Add timezone button clicked");
             timezonePopupEl.classList.toggle("hidden");
             if (!timezonePopupEl.classList.contains("hidden")) {
               renderTimezoneList();
+              // If the list is still empty, force re-render
+              if (!timezoneListEl.innerHTML.trim()) {
+                renderTimezoneList();
+              }
               timezoneSearchEl.focus();
             }
           });
@@ -577,7 +580,7 @@
           timezoneListEl.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const timezoneOption = e.target.closest(".timezone-option");
+            const timezoneOption = e.target.closest(".theme-option");
             if (!timezoneOption) return;
             try {
               const selectedTimezone = timezoneOption.dataset.timezone;
@@ -1526,7 +1529,7 @@
         }
 
         attachAddTimezoneListeners();
-        renderTimezoneList(); // Populate timezone list on initial load
+        // Remove initial renderTimezoneList() here, since it's now always called when the popup opens
 
         // Enable remove for all time-zone boxes, including defaults
         timezoneContainer.addEventListener('click', function(e) {
