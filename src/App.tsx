@@ -278,7 +278,7 @@ function App() {
 
         {/* Time Zone Cards */}
         <main className="mb-16">
-          <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-center gap-4 sm:gap-6">
+          <div className="flex flex-col lg:flex-row lg:flex-wrap justify-center items-center gap-4 lg:gap-6 max-w-6xl mx-auto">
             {timeZones.map((zone, index) => (
               <TimeZoneCard
                 key={zone.id}
@@ -296,7 +296,7 @@ function App() {
             <button
               onClick={() => setShowAddModal(true)}
               className={`
-                w-14 h-14 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center 
+                w-14 h-14 sm:w-16 sm:h-16 lg:w-48 lg:h-32 rounded-xl flex items-center justify-center 
                 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl
                 opacity-60 hover:opacity-100
                 ${
