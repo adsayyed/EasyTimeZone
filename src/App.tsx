@@ -133,32 +133,14 @@ function App() {
     setSortOrder(newSortOrder);
     
     const sortedZones = [...timeZones].sort((a, b) => {
-      // Convert time to 24-hour format for proper sorting
-      const timeA = convertTo24Hour(a.currentTime);
-      const timeB = convertTo24Hour(b.currentTime);
-      
       if (newSortOrder === 'asc') {
-        return timeA.localeCompare(timeB);
+        return a.offset - b.offset; // Negative offsets first (earlier times)
       } else {
-        return timeB.localeCompare(timeA);
+        return b.offset - a.offset; // Positive offsets first (later times)
       }
     });
     
     setTimeZones(sortedZones);
-  };
-
-  const convertTo24Hour = (timeStr: string): string => {
-    const [time, period] = timeStr.split(' ');
-    const [hours, minutes] = time.split(':');
-    let hour24 = parseInt(hours);
-    
-    if (period === 'PM' && hour24 !== 12) {
-      hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
-      hour24 = 0;
-    }
-    
-    return `${hour24.toString().padStart(2, '0')}:${minutes}`;
   };
 
   const handleReset = () => {
@@ -297,42 +279,42 @@ function App() {
               onClick={() => setShowAddModal(true)}
               className={`
                 w-14 h-14 sm:w-16 sm:h-16 lg:w-48 lg:h-32 rounded-xl flex items-center justify-center 
-                transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl
-                opacity-60 hover:opacity-100
+                transition-all duration-300 hover:scale-105 hover:shadow-xl
+                opacity-30 hover:opacity-80 shadow-sm hover:shadow-lg
                 ${
                 theme === 'dark' 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-gray-200 border border-gray-600' 
+                  ? 'bg-gray-800 hover:bg-gray-600 text-gray-500 hover:text-gray-200 border border-gray-700' 
                   : theme === 'oled'
-                  ? 'bg-gray-900 hover:bg-gray-800 text-gray-300 hover:text-gray-200 border border-gray-800'
+                  ? 'bg-gray-900 hover:bg-gray-700 text-gray-600 hover:text-gray-200 border border-gray-800'
                   : theme === 'blue'
-                  ? 'bg-blue-200 hover:bg-blue-300 text-blue-700 hover:text-blue-800 border border-blue-300'
+                  ? 'bg-blue-100 hover:bg-blue-200 text-blue-400 hover:text-blue-700 border border-blue-200'
                   : theme === 'green'
-                  ? 'bg-green-200 hover:bg-green-300 text-green-700 hover:text-green-800 border border-green-300'
+                  ? 'bg-green-100 hover:bg-green-200 text-green-400 hover:text-green-700 border border-green-200'
                   : theme === 'purple'
-                  ? 'bg-purple-200 hover:bg-purple-300 text-purple-700 hover:text-purple-800 border border-purple-300'
+                  ? 'bg-purple-100 hover:bg-purple-200 text-purple-400 hover:text-purple-700 border border-purple-200'
                   : theme === 'red'
-                  ? 'bg-red-200 hover:bg-red-300 text-red-700 hover:text-red-800 border border-red-300'
+                  ? 'bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-700 border border-red-200'
                   : theme === 'orange'
-                  ? 'bg-orange-200 hover:bg-orange-300 text-orange-700 hover:text-orange-800 border border-orange-300'
+                  ? 'bg-orange-100 hover:bg-orange-200 text-orange-400 hover:text-orange-700 border border-orange-200'
                   : theme === 'yellow'
-                  ? 'bg-yellow-200 hover:bg-yellow-300 text-yellow-700 hover:text-yellow-800 border border-yellow-300'
+                  ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-400 hover:text-yellow-700 border border-yellow-200'
                   : theme === 'pink'
-                  ? 'bg-pink-200 hover:bg-pink-300 text-pink-700 hover:text-pink-800 border border-pink-300'
+                  ? 'bg-pink-100 hover:bg-pink-200 text-pink-400 hover:text-pink-700 border border-pink-200'
                   : theme === 'indigo'
-                  ? 'bg-indigo-200 hover:bg-indigo-300 text-indigo-700 hover:text-indigo-800 border border-indigo-300'
+                  ? 'bg-indigo-100 hover:bg-indigo-200 text-indigo-400 hover:text-indigo-700 border border-indigo-200'
                   : theme === 'teal'
-                  ? 'bg-teal-200 hover:bg-teal-300 text-teal-700 hover:text-teal-800 border border-teal-300'
+                  ? 'bg-teal-100 hover:bg-teal-200 text-teal-400 hover:text-teal-700 border border-teal-200'
                   : theme === 'cyan'
-                  ? 'bg-cyan-200 hover:bg-cyan-300 text-cyan-700 hover:text-cyan-800 border border-cyan-300'
+                  ? 'bg-cyan-100 hover:bg-cyan-200 text-cyan-400 hover:text-cyan-700 border border-cyan-200'
                   : theme === 'emerald'
-                  ? 'bg-emerald-200 hover:bg-emerald-300 text-emerald-700 hover:text-emerald-800 border border-emerald-300'
+                  ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-400 hover:text-emerald-700 border border-emerald-200'
                   : theme === 'lime'
-                  ? 'bg-lime-200 hover:bg-lime-300 text-lime-700 hover:text-lime-800 border border-lime-300'
+                  ? 'bg-lime-100 hover:bg-lime-200 text-lime-400 hover:text-lime-700 border border-lime-200'
                   : theme === 'amber'
-                  ? 'bg-amber-200 hover:bg-amber-300 text-amber-700 hover:text-amber-800 border border-amber-300'
+                  ? 'bg-amber-100 hover:bg-amber-200 text-amber-400 hover:text-amber-700 border border-amber-200'
                   : theme === 'rose'
-                  ? 'bg-rose-200 hover:bg-rose-300 text-rose-700 hover:text-rose-800 border border-rose-300'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-600 hover:text-gray-700 border border-gray-300'
+                  ? 'bg-rose-100 hover:bg-rose-200 text-rose-400 hover:text-rose-700 border border-rose-200'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 border border-gray-200'
               }`}
               aria-label="Add new time zone"
             >
