@@ -278,7 +278,7 @@ function App() {
             <button
               onClick={() => setShowAddModal(true)}
               className={`
-                w-14 h-14 sm:w-16 sm:h-16 lg:w-44 lg:h-32 rounded-xl flex items-center justify-center 
+                w-14 h-14 sm:w-16 sm:h-16 lg:w-56 lg:h-32 rounded-xl flex items-center justify-center 
                 transition-all duration-300 hover:scale-105 hover:shadow-xl
                 opacity-30 hover:opacity-80 shadow-sm hover:shadow-lg
                 ${
