@@ -127,14 +127,14 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
         {/* Top Row: Abbreviation + Offset (left) */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <span className={`text-sm sm:text-base font-bold ${
+            <span className={`text-base sm:text-lg font-bold ${
               theme === 'dark' ? 'text-gray-200' : 
               theme === 'oled' ? 'text-white' :
               'text-gray-700'
             }`}>
               {timeZone.abbreviation}
             </span>
-            <span className={`text-xs font-medium ${
+            <span className={`text-xs sm:text-sm font-medium ${
               theme === 'dark' ? 'text-gray-400' : 
               theme === 'oled' ? 'text-gray-300' :
               'text-gray-500'
@@ -149,7 +149,7 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
         {/* Current Time - Centered and Larger */}
         <div className="text-center mb-3">
           <div 
-            className={`text-2xl sm:text-3xl font-bold cursor-pointer transition-all duration-200 hover:scale-105 ${
+            className={`text-3xl sm:text-4xl font-bold cursor-pointer transition-all duration-200 hover:scale-105 ${
               theme === 'dark' ? 'text-white hover:text-blue-400' :
               theme === 'oled' ? 'text-white hover:text-blue-400' :
               theme === 'blue' ? 'text-blue-900 hover:text-blue-600' :
