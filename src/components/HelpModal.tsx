@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Clock, Plus, Palette, Type, RotateCcw, ArrowUpDown, HelpCircle, Clock12 } from 'lucide-react';
+import { X, Clock, Plus, Palette, Type, Trash2, ArrowUpDown, HelpCircle, Clock12 } from 'lucide-react';
 import { Theme } from '../types';
 
 interface HelpModalProps {
@@ -352,7 +352,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
             </div>
 
             <div className="flex items-start gap-3">
-              <RotateCcw className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+              <Trash2 className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
                 theme === 'blue' ? 'text-blue-600' :
                 theme === 'green' ? 'text-green-600' :
                 theme === 'purple' ? 'text-purple-600' :
