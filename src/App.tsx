@@ -280,7 +280,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className={`fixed bottom-0 left-0 right-0 md:bottom-2 md:left-auto md:right-2 md:w-auto backdrop-blur-sm rounded-none md:rounded-lg p-2.5 md:p-3.5 shadow-lg border ${
+        <footer className={`fixed bottom-2 left-1/2 transform -translate-x-1/2 md:left-auto md:right-2 md:transform-none backdrop-blur-sm rounded-lg p-2.5 md:p-3.5 shadow-lg border ${
           theme === 'dark' 
             ? 'bg-gray-800/90 border-gray-700' 
             : theme === 'oled'
@@ -315,7 +315,7 @@ function App() {
             ? 'bg-rose-100/90 border-rose-200'
             : 'bg-white/90 border-gray-200'
         }`}>
-          <div className="flex items-center justify-center gap-2 md:gap-2.5">
+          <div className="flex items-center gap-2 md:gap-2.5">
             <div className="flex items-center gap-1.5 md:gap-2">
               <button
                 onClick={handleSort}
