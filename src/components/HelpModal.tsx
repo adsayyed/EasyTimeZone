@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Clock, Plus, Palette, Type, RotateCcw, ArrowUpDown, HelpCircle } from 'lucide-react';
+import { X, Clock, Plus, Palette, Type, RotateCcw, ArrowUpDown, HelpCircle, Clock12 } from 'lucide-react';
 import { Theme } from '../types';
 
 interface HelpModalProps {
@@ -228,6 +228,37 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
             </div>
 
             <div className="flex items-start gap-3">
+              <Clock12 className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+                theme === 'blue' ? 'text-blue-600' :
+                theme === 'green' ? 'text-green-600' :
+                theme === 'purple' ? 'text-purple-600' :
+                theme === 'red' ? 'text-red-600' :
+                theme === 'orange' ? 'text-orange-600' :
+                theme === 'yellow' ? 'text-yellow-600' :
+                theme === 'pink' ? 'text-pink-600' :
+                theme === 'indigo' ? 'text-indigo-600' :
+                theme === 'teal' ? 'text-teal-600' :
+                theme === 'cyan' ? 'text-cyan-600' :
+                theme === 'emerald' ? 'text-emerald-600' :
+                theme === 'lime' ? 'text-lime-600' :
+                theme === 'amber' ? 'text-amber-600' :
+                theme === 'rose' ? 'text-rose-600' :
+                theme === 'oled' ? 'text-blue-400' :
+                'text-blue-500'
+              }`} />
+              <div>
+                <h3 className="font-semibold mb-1">Time Format Toggle</h3>
+                <p className={`text-sm ${
+                  theme === 'dark' ? 'text-gray-400' :
+                  theme === 'oled' ? 'text-gray-400' :
+                  'text-gray-600'
+                }`}>
+                  Click the clock icon in the bottom toolbar to switch between 12-hour (2:30 PM) and 24-hour (14:30) time formats.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
               <ArrowUpDown className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
                 theme === 'blue' ? 'text-blue-600' :
                 theme === 'green' ? 'text-green-600' :
@@ -253,7 +284,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
                   theme === 'oled' ? 'text-gray-400' :
                   'text-gray-600'
                 }`}>
-                  Click the sort button to arrange zones by time (earliest to latest).
+                  Click the sort icon in the bottom toolbar to arrange zones by time (earliest to latest).
                 </p>
               </div>
             </div>
@@ -284,7 +315,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
                   theme === 'oled' ? 'text-gray-400' :
                   'text-gray-600'
                 }`}>
-                  Click the palette icon to choose from 17 different color themes.
+                  Click the palette icon in the bottom toolbar to choose from 17 different color themes.
                 </p>
               </div>
             </div>
@@ -315,7 +346,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
                   theme === 'oled' ? 'text-gray-400' :
                   'text-gray-600'
                 }`}>
-                  Click the font icon to select from various font families.
+                  Click the font icon in the bottom toolbar to select from various font families.
                 </p>
               </div>
             </div>
@@ -346,7 +377,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ onClose, theme }) => {
                   theme === 'oled' ? 'text-gray-400' :
                   'text-gray-600'
                 }`}>
-                  Click the reset icon to restore all settings to their defaults.
+                  Click the reset icon in the bottom toolbar to restore all settings to their defaults.
                 </p>
               </div>
             </div>
