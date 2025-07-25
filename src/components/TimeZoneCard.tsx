@@ -91,7 +91,7 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
 
   return (
     <div 
-      className={`${getCardClasses()} w-full max-w-xs lg:max-w-56`}
+      className={`${getCardClasses()} w-full max-w-xs lg:flex-1 lg:min-w-0 lg:max-w-none`}
       onClick={handleClick}
       role="button"
       tabIndex={0}
