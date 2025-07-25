@@ -185,6 +185,32 @@ function App() {
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Easy Time Zone</h1>
           <div className="flex justify-center items-center gap-3">
             <button
+              onClick={() => setShowAddModal(true)}
+              className={`px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
+                theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
+                theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
+                theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
+                theme === 'red' ? 'bg-red-600 hover:bg-red-700 text-white' :
+                theme === 'orange' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
+                theme === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' :
+                theme === 'pink' ? 'bg-pink-600 hover:bg-pink-700 text-white' :
+                theme === 'indigo' ? 'bg-indigo-600 hover:bg-indigo-700 text-white' :
+                theme === 'teal' ? 'bg-teal-600 hover:bg-teal-700 text-white' :
+                theme === 'cyan' ? 'bg-cyan-600 hover:bg-cyan-700 text-white' :
+                theme === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
+                theme === 'lime' ? 'bg-lime-600 hover:bg-lime-700 text-white' :
+                theme === 'amber' ? 'bg-amber-600 hover:bg-amber-700 text-white' :
+                theme === 'rose' ? 'bg-rose-600 hover:bg-rose-700 text-white' :
+                theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
+                theme === 'oled' ? 'bg-gray-600 hover:bg-gray-700 text-white' :
+                'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
+              aria-label="Add new time zone"
+            >
+              Add Zone
+            </button>
+            
+            <button
               onClick={manualTime ? () => {
                 handleClearManualTime();
                 setLiveTime(true);
@@ -231,32 +257,6 @@ function App() {
               aria-label={manualTime ? "Return to live time" : "Set custom time"}
             >
               {manualTime ? 'Live Time' : 'Set Time'}
-            </button>
-            
-            <button
-              onClick={() => setShowAddModal(true)}
-              className={`px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
-                theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
-                theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
-                theme === 'red' ? 'bg-red-600 hover:bg-red-700 text-white' :
-                theme === 'orange' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
-                theme === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' :
-                theme === 'pink' ? 'bg-pink-600 hover:bg-pink-700 text-white' :
-                theme === 'indigo' ? 'bg-indigo-600 hover:bg-indigo-700 text-white' :
-                theme === 'teal' ? 'bg-teal-600 hover:bg-teal-700 text-white' :
-                theme === 'cyan' ? 'bg-cyan-600 hover:bg-cyan-700 text-white' :
-                theme === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
-                theme === 'lime' ? 'bg-lime-600 hover:bg-lime-700 text-white' :
-                theme === 'amber' ? 'bg-amber-600 hover:bg-amber-700 text-white' :
-                theme === 'rose' ? 'bg-rose-600 hover:bg-rose-700 text-white' :
-                theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                theme === 'oled' ? 'bg-gray-600 hover:bg-gray-700 text-white' :
-                'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-              aria-label="Add new time zone"
-            >
-              Add Zone
             </button>
           </div>
         </header>
