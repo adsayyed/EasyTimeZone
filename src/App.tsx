@@ -273,7 +273,7 @@ function App() {
                 onRemove={() => handleRemoveTimeZone(zone.id)}
                 theme={theme}
                 canRemove={timeZones.length > 1}
-                onTimeClick={handleTimeZoneTimeClick}
+                onTimeSubmit={handleTimeInput}
               />
             ))}
           </div>
