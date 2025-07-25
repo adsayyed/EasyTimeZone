@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Clock, Plus, Palette, Type, RotateCcw, Edit3, ArrowUpDown, HelpCircle, Clock12, Clock4 } from 'lucide-react';
+import { Clock, Plus, Palette, Type, Trash2, Edit3, ArrowUpDown, HelpCircle, Clock12, Clock4 } from 'lucide-react';
 import TimeZoneCard from './components/TimeZoneCard';
 import AddZoneModal from './components/AddZoneModal';
 import ThemeSelector from './components/ThemeSelector';
@@ -540,7 +540,7 @@ function App() {
                 }`}
                 aria-label="Reset to default settings"
               >
-                <RotateCcw size={14} className="md:w-5 md:h-5" />
+                <Trash2 size={14} className="md:w-5 md:h-5" />
               </button>
               
               <button
