@@ -292,12 +292,12 @@ function App() {
         <main className="mb-16">
           <div className={`grid gap-4 lg:gap-6 max-w-6xl mx-auto ${
             timeZones.length === 1 
-              ? 'grid-cols-1 justify-items-center gap-3'
+              ? 'grid-cols-1 justify-items-center'
               : timeZones.length === 2
-              ? 'grid-cols-1 md:grid-cols-2 justify-items-center gap-3 md:gap-4'
+              ? 'grid-cols-1 md:grid-cols-2 justify-items-center'
               : timeZones.length === 3
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-3 md:gap-4 lg:gap-5'
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
           }`}>
             {timeZones.map((zone, index) => (
               <TimeZoneCard
