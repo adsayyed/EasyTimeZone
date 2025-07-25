@@ -151,7 +151,7 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
         {/* Current Time - Centered and Larger */}
         <div className="text-center mb-3">
           <div 
-            className={`text-2xl sm:text-3xl font-bold cursor-pointer transition-all duration-200 hover:scale-105 whitespace-nowrap ${
+            className={`text-3xl sm:text-4xl font-bold cursor-pointer transition-all duration-200 hover:scale-105 ${
               theme === 'dark' ? 'text-white hover:text-blue-400' :
               theme === 'oled' ? 'text-white hover:text-blue-400' :
               theme === 'blue' ? 'text-blue-900 hover:text-blue-600' :

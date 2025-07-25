@@ -206,19 +206,19 @@ export const getAvailableTimeZonesSync = (): AvailableTimeZone[] => {
   return cachedTimeZones || worldwideTimeZones;
 };
 
-export const getTimeInZone = (date: Date, timeZone: string, is24Hour: boolean = false): string => {
+export const getTimeInZone = (date: Date, timeZone: string): string => {
   try {
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone,
       hour: '2-digit',
       minute: '2-digit',
-      hour12: !is24Hour
+      hour12: true
     });
     
     return formatter.format(date);
   } catch (error) {
     console.error(`Error formatting time for timezone ${timeZone}:`, error);
-    return is24Hour ? '00:00' : '00:00 AM';
+    return '00:00 AM';
   }
 };
 

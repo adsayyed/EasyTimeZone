@@ -25,7 +25,6 @@ export const getDefaultTimeZones = (): TimeZone[] => {
   const currentTime = new Date();
   const baseZoneId = 'America/Chicago'; // CST
   const availableZones = getAvailableTimeZonesSync();
-  const is24Hour = false; // Default to 12-hour format
   
   const defaultZoneIds = [
     'America/Los_Angeles',  // PST (Pacific)
@@ -39,7 +38,7 @@ export const getDefaultTimeZones = (): TimeZone[] => {
       id: zoneId,
       name: zoneInfo?.name || zoneId,
       abbreviation: zoneInfo?.abbreviation || 'GMT',
-      currentTime: getTimeInZone(currentTime, zoneId, is24Hour),
+      currentTime: getTimeInZone(currentTime, zoneId),
       offset: calculateOffset(zoneId, baseZoneId, currentTime)
     };
   });
