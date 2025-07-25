@@ -280,7 +280,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className={`fixed bottom-2 left-1/2 transform -translate-x-1/2 md:left-auto md:right-2 md:transform-none backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-lg border ${
+        <footer className={`fixed bottom-2 left-1/2 transform -translate-x-1/2 md:left-auto md:right-2 md:transform-none backdrop-blur-sm rounded-lg p-2.5 md:p-3.5 shadow-lg border ${
           theme === 'dark' 
             ? 'bg-gray-800/90 border-gray-700' 
             : theme === 'oled'
@@ -315,11 +315,11 @@ function App() {
             ? 'bg-rose-100/90 border-rose-200'
             : 'bg-white/90 border-gray-200'
         }`}>
-          <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="flex items-center gap-2 md:gap-2.5">
             <div className="flex items-center gap-1.5 md:gap-2">
               <button
                 onClick={handleSort}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -359,12 +359,12 @@ function App() {
                 aria-label={`Sort time zones ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
                 title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
               >
-                <ArrowUpDown size={12} className="md:w-4 md:h-4" />
+                <ArrowUpDown size={14} className="md:w-5 md:h-5" />
               </button>
               
               <button
                 onClick={() => setTimeFormat(timeFormat === '12h' ? '24h' : '12h')}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -405,15 +405,15 @@ function App() {
                 title={`Switch to ${timeFormat === '12h' ? '24-hour' : '12-hour'} format`}
               >
                 {timeFormat === '12h' ? (
-                  <Clock12 size={12} className="md:w-4 md:h-4" />
+                  <Clock12 size={14} className="md:w-5 md:h-5" />
                 ) : (
-                  <Clock4 size={12} className="md:w-4 md:h-4" />
+                  <Clock4 size={14} className="md:w-5 md:h-5" />
                 )}
               </button>
               
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -452,12 +452,12 @@ function App() {
                 }`}
                 aria-label="Change theme"
               >
-                <Palette size={12} className="md:w-4 md:h-4" />
+                <Palette size={14} className="md:w-5 md:h-5" />
               </button>
               
               <button
                 onClick={() => setShowFontSelector(!showFontSelector)}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -496,12 +496,12 @@ function App() {
                 }`}
                 aria-label="Change font settings"
               >
-                <Type size={12} className="md:w-4 md:h-4" />
+                <Type size={14} className="md:w-5 md:h-5" />
               </button>
               
               <button
                 onClick={handleReset}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -540,12 +540,12 @@ function App() {
                 }`}
                 aria-label="Reset to default settings"
               >
-                <RotateCcw size={12} className="md:w-4 md:h-4" />
+                <RotateCcw size={14} className="md:w-5 md:h-5" />
               </button>
               
               <button
                 onClick={() => setShowHelp(!showHelp)}
-                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1.5 md:p-2.5 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -584,11 +584,11 @@ function App() {
                 }`}
                 aria-label="Show help guide"
               >
-                <HelpCircle size={12} className="md:w-4 md:h-4" />
+                <HelpCircle size={14} className="md:w-5 md:h-5" />
               </button>
             </div>
             
-            <span className={`text-xs ${
+            <span className={`text-xs md:text-sm ${
               theme === 'dark' ? 'text-gray-400' :
               theme === 'oled' ? 'text-gray-400' :
               theme === 'blue' ? 'text-blue-500' :
