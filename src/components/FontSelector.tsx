@@ -173,7 +173,7 @@ const FontSelector: React.FC<FontSelectorProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span>{family.name}</span>
+                    <span style={family.style}>{family.name}</span>
                     {currentSettings.family === family.id && (
                       <Check size={18} className={`${
                         theme === 'oled' ? 'text-blue-400' :
