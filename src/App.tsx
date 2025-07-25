@@ -294,9 +294,9 @@ function App() {
             timeZones.length === 1 
               ? 'grid-cols-1 justify-items-center gap-2'
               : timeZones.length === 2
-              ? 'grid-cols-1 md:grid-cols-2 justify-items-center gap-2 md:gap-3'
+              ? 'grid-cols-1 md:grid-cols-2 justify-items-center gap-1 md:gap-2'
               : timeZones.length === 3
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-2 md:gap-3 lg:gap-4'
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center gap-1 md:gap-2 lg:gap-3'
               : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6'
           }`}>
             {timeZones.map((zone, index) => (
