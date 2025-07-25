@@ -24,6 +24,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>('light');
   const [fontSettings, setFontSettings] = useState<FontSettings>({ size: 'medium', family: 'sans' });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [is24Hour, setIs24Hour] = useState<boolean>(false);
 
   // Load preferences on mount
   useEffect(() => {
@@ -33,6 +34,7 @@ function App() {
       setBaseZoneId(preferences.baseZoneId || 'America/Chicago');
       setTheme(preferences.theme || 'light');
       setFontSettings(preferences.fontSettings || { family: 'sans' });
+      setIs24Hour(preferences.is24Hour || false);
     } else {
       setTimeZones(getDefaultTimeZones());
     }
@@ -44,9 +46,9 @@ function App() {
       timeZones,
       baseZoneId,
       theme,
-      fontSettings
+      fontSettings,
+      is24Hour
     });
-  }, [timeZones, baseZoneId, theme, fontSettings]);
 
   // Live time updates
   useEffect(() => {
@@ -67,11 +69,10 @@ function App() {
     setTimeZones(zones => 
       zones.map(zone => ({
         ...zone,
-        currentTime: getTimeInZone(timeToUse, zone.id),
+        currentTime: getTimeInZone(timeToUse, zone.id, is24Hour),
         offset: calculateOffset(zone.id, baseZoneId, timeToUse)
       }))
     );
-  }, [currentTime, baseZoneId, manualTime]);
 
   useEffect(() => {
     updateTimeZones();
@@ -87,7 +88,7 @@ function App() {
         id: zoneId,
         name: zoneInfo.name,
         abbreviation: zoneInfo.abbreviation,
-        currentTime: getTimeInZone(timeToUse, zoneId),
+        currentTime: getTimeInZone(timeToUse, zoneId, is24Hour),
         offset: calculateOffset(zoneId, baseZoneId, timeToUse)
       };
       setTimeZones([...timeZones, newZone]);
@@ -151,6 +152,7 @@ function App() {
     setLiveTime(false);
     setManualTime(null);
     setSortOrder('asc');
+    setIs24Hour(false);
   };
 
   const themeClasses = {
@@ -340,6 +342,51 @@ function App() {
         }`}>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIs24Hour(!is24Hour)}
+                className={`px-2 py-1 text-xs font-mono rounded transition-colors hover:scale-110 ${
+                  theme === 'dark' 
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
+                    : theme === 'oled'
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-900'
+                    : theme === 'blue'
+                    ? 'text-blue-600 hover:text-blue-800 hover:bg-blue-200'
+                    : theme === 'green'
+                    ? 'text-green-600 hover:text-green-800 hover:bg-green-200'
+                    : theme === 'purple'
+                    ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-200'
+                    : theme === 'red'
+                    ? 'text-red-600 hover:text-red-800 hover:bg-red-200'
+                    : theme === 'orange'
+                    ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-200'
+                    : theme === 'yellow'
+                    ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-200'
+                    : theme === 'pink'
+                    ? 'text-pink-600 hover:text-pink-800 hover:bg-pink-200'
+                    : theme === 'indigo'
+                    ? 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-200'
+                    : theme === 'teal'
+                    ? 'text-teal-600 hover:text-teal-800 hover:bg-teal-200'
+                    : theme === 'cyan'
+                    ? 'text-cyan-600 hover:text-cyan-800 hover:bg-cyan-200'
+                    : theme === 'emerald'
+                    ? 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-200'
+                    : theme === 'lime'
+                    ? 'text-lime-600 hover:text-lime-800 hover:bg-lime-200'
+                    : theme === 'amber'
+                    ? 'text-amber-600 hover:text-amber-800 hover:bg-amber-200'
+                    : theme === 'rose'
+                    ? 'text-rose-600 hover:text-rose-800 hover:bg-rose-200'
+                    : theme === 'cyberpunk'
+                    ? 'text-cyan-400 hover:text-cyan-300 hover:bg-gray-800'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                aria-label={`Switch to ${is24Hour ? '12' : '24'} hour format`}
+                title={`Switch to ${is24Hour ? '12' : '24'} hour format`}
+              >
+                {is24Hour ? '12H' : '24H'}
+              </button>
+              
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
                 className={`p-2 md:p-3 rounded-lg transition-colors hover:scale-110 ${
