@@ -257,7 +257,7 @@ function App() {
             
             <button
               onClick={handleSort}
-              className={`px-3 py-2 md:px-4 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
+             className={`px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
                 theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
                 theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
                 theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
