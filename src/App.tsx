@@ -257,7 +257,7 @@ function App() {
             
             <button
               onClick={handleSort}
-             className={`px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
+             className={`px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white flex items-center justify-center ${
                 theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
                 theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
                 theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
@@ -279,7 +279,7 @@ function App() {
               aria-label={`Sort time zones ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
               title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
             >
-              <ArrowUpDown size={16} className="md:w-5 md:h-5" />
+             <ArrowUpDown size={16} className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </header>
