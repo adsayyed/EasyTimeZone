@@ -262,7 +262,7 @@ function App() {
         </header>
 
         {/* Time Zone Cards */}
-        <main className="mb-24 md:mb-20">
+        <main className="mb-8">
           <div className="flex flex-col lg:flex-row lg:flex-wrap justify-center items-center gap-4 lg:gap-6 max-w-7xl mx-auto">
             {timeZones.map((zone, index) => (
               <TimeZoneCard
@@ -280,7 +280,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className={`fixed bottom-0 left-0 right-0 md:bottom-2 md:left-auto md:right-2 md:w-auto backdrop-blur-sm rounded-none md:rounded-lg p-2.5 md:p-3.5 shadow-lg border ${
+        <footer className={`backdrop-blur-sm rounded-lg p-2.5 md:p-3.5 shadow-lg border ${
           theme === 'dark' 
             ? 'bg-gray-800/90 border-gray-700' 
             : theme === 'oled'
