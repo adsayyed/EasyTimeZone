@@ -230,6 +230,32 @@ function App() {
             </button>
             
             <button
+              onClick={() => setShowAddModal(true)}
+              className={`px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
+                theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
+                theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
+                theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
+                theme === 'red' ? 'bg-red-600 hover:bg-red-700 text-white' :
+                theme === 'orange' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
+                theme === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' :
+                theme === 'pink' ? 'bg-pink-600 hover:bg-pink-700 text-white' :
+                theme === 'indigo' ? 'bg-indigo-600 hover:bg-indigo-700 text-white' :
+                theme === 'teal' ? 'bg-teal-600 hover:bg-teal-700 text-white' :
+                theme === 'cyan' ? 'bg-cyan-600 hover:bg-cyan-700 text-white' :
+                theme === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
+                theme === 'lime' ? 'bg-lime-600 hover:bg-lime-700 text-white' :
+                theme === 'amber' ? 'bg-amber-600 hover:bg-amber-700 text-white' :
+                theme === 'rose' ? 'bg-rose-600 hover:bg-rose-700 text-white' :
+                theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
+                theme === 'oled' ? 'bg-gray-600 hover:bg-gray-700 text-white' :
+                'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
+              aria-label="Add new time zone"
+            >
+              Add Zone
+            </button>
+            
+            <button
               onClick={handleSort}
               className={`px-3 py-2 md:px-4 md:py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
                 theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
@@ -273,53 +299,6 @@ function App() {
                 onTimeClick={handleTimeZoneTimeClick}
               />
             ))}
-            
-            {/* Add Zone Button */}
-            <button
-              onClick={() => setShowAddModal(true)}
-              className={`
-                w-14 h-14 sm:w-16 sm:h-16 lg:w-56 lg:h-32 rounded-xl flex items-center justify-center 
-                transition-all duration-300 hover:scale-105 hover:shadow-xl
-                opacity-30 hover:opacity-80 shadow-sm hover:shadow-lg
-                ${
-                theme === 'dark' 
-                  ? 'bg-gray-800 hover:bg-gray-600 text-gray-500 hover:text-gray-200 border border-gray-700' 
-                  : theme === 'oled'
-                  ? 'bg-gray-900 hover:bg-gray-700 text-gray-600 hover:text-gray-200 border border-gray-800'
-                  : theme === 'blue'
-                  ? 'bg-blue-100 hover:bg-blue-200 text-blue-400 hover:text-blue-700 border border-blue-200'
-                  : theme === 'green'
-                  ? 'bg-green-100 hover:bg-green-200 text-green-400 hover:text-green-700 border border-green-200'
-                  : theme === 'purple'
-                  ? 'bg-purple-100 hover:bg-purple-200 text-purple-400 hover:text-purple-700 border border-purple-200'
-                  : theme === 'red'
-                  ? 'bg-red-100 hover:bg-red-200 text-red-400 hover:text-red-700 border border-red-200'
-                  : theme === 'orange'
-                  ? 'bg-orange-100 hover:bg-orange-200 text-orange-400 hover:text-orange-700 border border-orange-200'
-                  : theme === 'yellow'
-                  ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-400 hover:text-yellow-700 border border-yellow-200'
-                  : theme === 'pink'
-                  ? 'bg-pink-100 hover:bg-pink-200 text-pink-400 hover:text-pink-700 border border-pink-200'
-                  : theme === 'indigo'
-                  ? 'bg-indigo-100 hover:bg-indigo-200 text-indigo-400 hover:text-indigo-700 border border-indigo-200'
-                  : theme === 'teal'
-                  ? 'bg-teal-100 hover:bg-teal-200 text-teal-400 hover:text-teal-700 border border-teal-200'
-                  : theme === 'cyan'
-                  ? 'bg-cyan-100 hover:bg-cyan-200 text-cyan-400 hover:text-cyan-700 border border-cyan-200'
-                  : theme === 'emerald'
-                  ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-400 hover:text-emerald-700 border border-emerald-200'
-                  : theme === 'lime'
-                  ? 'bg-lime-100 hover:bg-lime-200 text-lime-400 hover:text-lime-700 border border-lime-200'
-                  : theme === 'amber'
-                  ? 'bg-amber-100 hover:bg-amber-200 text-amber-400 hover:text-amber-700 border border-amber-200'
-                  : theme === 'rose'
-                  ? 'bg-rose-100 hover:bg-rose-200 text-rose-400 hover:text-rose-700 border border-rose-200'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-600 border border-gray-200'
-              }`}
-              aria-label="Add new time zone"
-            >
-              <Plus size={20} className="sm:w-6 sm:h-6" />
-            </button>
           </div>
         </main>
 
