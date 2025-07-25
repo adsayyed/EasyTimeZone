@@ -592,7 +592,7 @@ function App() {
               theme === 'amber' ? 'text-amber-500' :
               theme === 'rose' ? 'text-rose-500' :
               'text-gray-500'
-            }`}>v1.0.0.1</span>
+            }`}>v1.0.1</span>
           </div>
         </footer>
 
