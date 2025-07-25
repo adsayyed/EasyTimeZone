@@ -107,8 +107,6 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
       {canRemove && (
         <div 
           className="absolute top-4 right-2 w-10 h-10 flex items-center justify-center"
-          onMouseEnter={() => setShowRemove(true)}
-          onMouseLeave={() => setShowRemove(false)}
         >
           <button
             onClick={(e) => {
@@ -116,7 +114,7 @@ const TimeZoneCard: React.FC<TimeZoneCardProps> = ({
               onRemove();
             }}
             className={`text-gray-400 hover:text-red-500 transition-all duration-200 hover:scale-125 flex items-center justify-center p-2 ${
-              showRemove ? 'opacity-100' : 'opacity-0'
+              'opacity-100'
             }`}
             aria-label={`Remove ${timeZone.abbreviation} time zone`}
           >
