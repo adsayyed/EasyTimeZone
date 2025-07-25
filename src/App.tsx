@@ -262,7 +262,7 @@ function App() {
         </header>
 
         {/* Time Zone Cards */}
-        <main className="mb-20 md:mb-16">
+        <main className="mb-24 md:mb-20">
           <div className="flex flex-col lg:flex-row lg:flex-wrap justify-center items-center gap-4 lg:gap-6 max-w-7xl mx-auto">
             {timeZones.map((zone, index) => (
               <TimeZoneCard
@@ -280,7 +280,7 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 md:left-auto md:right-4 md:transform-none backdrop-blur-sm rounded-lg p-3 md:p-4 shadow-lg border ${
+        <footer className={`fixed bottom-2 left-1/2 transform -translate-x-1/2 md:left-auto md:right-2 md:transform-none backdrop-blur-sm rounded-lg p-2 md:p-3 shadow-lg border ${
           theme === 'dark' 
             ? 'bg-gray-800/90 border-gray-700' 
             : theme === 'oled'
@@ -315,11 +315,11 @@ function App() {
             ? 'bg-rose-100/90 border-rose-200'
             : 'bg-white/90 border-gray-200'
         }`}>
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <button
                 onClick={handleSort}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -359,12 +359,12 @@ function App() {
                 aria-label={`Sort time zones ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
                 title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
               >
-                <ArrowUpDown size={14} className="md:w-5 md:h-5" />
+                <ArrowUpDown size={12} className="md:w-4 md:h-4" />
               </button>
               
               <button
                 onClick={() => setTimeFormat(timeFormat === '12h' ? '24h' : '12h')}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -405,15 +405,15 @@ function App() {
                 title={`Switch to ${timeFormat === '12h' ? '24-hour' : '12-hour'} format`}
               >
                 {timeFormat === '12h' ? (
-                  <Clock12 size={14} className="md:w-5 md:h-5" />
+                  <Clock12 size={12} className="md:w-4 md:h-4" />
                 ) : (
-                  <Clock4 size={14} className="md:w-5 md:h-5" />
+                  <Clock4 size={12} className="md:w-4 md:h-4" />
                 )}
               </button>
               
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -452,12 +452,12 @@ function App() {
                 }`}
                 aria-label="Change theme"
               >
-                <Palette size={14} className="md:w-5 md:h-5" />
+                <Palette size={12} className="md:w-4 md:h-4" />
               </button>
               
               <button
                 onClick={() => setShowFontSelector(!showFontSelector)}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -496,12 +496,12 @@ function App() {
                 }`}
                 aria-label="Change font settings"
               >
-                <Type size={14} className="md:w-5 md:h-5" />
+                <Type size={12} className="md:w-4 md:h-4" />
               </button>
               
               <button
                 onClick={handleReset}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -540,12 +540,12 @@ function App() {
                 }`}
                 aria-label="Reset to default settings"
               >
-                <RotateCcw size={14} className="md:w-5 md:h-5" />
+                <RotateCcw size={12} className="md:w-4 md:h-4" />
               </button>
               
               <button
                 onClick={() => setShowHelp(!showHelp)}
-                className={`p-1.5 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                className={`p-1 md:p-2 rounded-lg transition-colors hover:scale-110 ${
                   theme === 'dark' 
                     ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
                     : theme === 'oled'
@@ -584,11 +584,11 @@ function App() {
                 }`}
                 aria-label="Show help guide"
               >
-                <HelpCircle size={14} className="md:w-5 md:h-5" />
+                <HelpCircle size={12} className="md:w-4 md:h-4" />
               </button>
             </div>
             
-            <span className={`text-xs md:text-sm ${
+            <span className={`text-xs ${
               theme === 'dark' ? 'text-gray-400' :
               theme === 'oled' ? 'text-gray-400' :
               theme === 'blue' ? 'text-blue-500' :
