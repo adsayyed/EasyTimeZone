@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Clock, Plus, Palette, Type, RotateCcw, Edit3, ArrowUpDown, HelpCircle } from 'lucide-react';
+import { Clock, Plus, Palette, Type, RotateCcw, Edit3, ArrowUpDown, HelpCircle, Clock12, Clock4 } from 'lucide-react';
 import TimeZoneCard from './components/TimeZoneCard';
 import AddZoneModal from './components/AddZoneModal';
 import ThemeSelector from './components/ThemeSelector';
@@ -24,6 +24,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>('light');
   const [fontSettings, setFontSettings] = useState<FontSettings>({ size: 'medium', family: 'sans' });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [timeFormat, setTimeFormat] = useState<'12h' | '24h'>('12h');
 
   // Load preferences on mount
   useEffect(() => {
@@ -33,6 +34,7 @@ function App() {
       setBaseZoneId(preferences.baseZoneId || 'America/Chicago');
       setTheme(preferences.theme || 'light');
       setFontSettings(preferences.fontSettings || { family: 'sans' });
+      setTimeFormat(preferences.timeFormat || '12h');
     } else {
       setTimeZones(getDefaultTimeZones());
     }
@@ -44,9 +46,10 @@ function App() {
       timeZones,
       baseZoneId,
       theme,
-      fontSettings
+      fontSettings,
+      timeFormat
     });
-  }, [timeZones, baseZoneId, theme, fontSettings]);
+  }, [timeZones, baseZoneId, theme, fontSettings, timeFormat]);
 
   // Live time updates
   useEffect(() => {
@@ -67,11 +70,11 @@ function App() {
     setTimeZones(zones => 
       zones.map(zone => ({
         ...zone,
-        currentTime: getTimeInZone(timeToUse, zone.id),
+        currentTime: getTimeInZone(timeToUse, zone.id, timeFormat),
         offset: calculateOffset(zone.id, baseZoneId, timeToUse)
       }))
     );
-  }, [currentTime, baseZoneId, manualTime]);
+  }, [currentTime, baseZoneId, manualTime, timeFormat]);
 
   useEffect(() => {
     updateTimeZones();
@@ -87,7 +90,7 @@ function App() {
         id: zoneId,
         name: zoneInfo.name,
         abbreviation: zoneInfo.abbreviation,
-        currentTime: getTimeInZone(timeToUse, zoneId),
+        currentTime: getTimeInZone(timeToUse, zoneId, timeFormat),
         offset: calculateOffset(zoneId, baseZoneId, timeToUse)
       };
       setTimeZones([...timeZones, newZone]);
@@ -151,6 +154,7 @@ function App() {
     setLiveTime(false);
     setManualTime(null);
     setSortOrder('asc');
+    setTimeFormat('12h');
   };
 
   const themeClasses = {
@@ -254,33 +258,6 @@ function App() {
             >
               Add Zone
             </button>
-            
-            <button
-              onClick={handleSort}
-             className={`px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white flex items-center justify-center ${
-                theme === 'blue' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                theme === 'green' ? 'bg-green-600 hover:bg-green-700 text-white' :
-                theme === 'purple' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
-                theme === 'red' ? 'bg-red-600 hover:bg-red-700 text-white' :
-                theme === 'orange' ? 'bg-orange-600 hover:bg-orange-700 text-white' :
-                theme === 'yellow' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' :
-                theme === 'pink' ? 'bg-pink-600 hover:bg-pink-700 text-white' :
-                theme === 'indigo' ? 'bg-indigo-600 hover:bg-indigo-700 text-white' :
-                theme === 'teal' ? 'bg-teal-600 hover:bg-teal-700 text-white' :
-                theme === 'cyan' ? 'bg-cyan-600 hover:bg-cyan-700 text-white' :
-                theme === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
-                theme === 'lime' ? 'bg-lime-600 hover:bg-lime-700 text-white' :
-                theme === 'amber' ? 'bg-amber-600 hover:bg-amber-700 text-white' :
-                theme === 'rose' ? 'bg-rose-600 hover:bg-rose-700 text-white' :
-                theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                theme === 'oled' ? 'bg-gray-600 hover:bg-gray-700 text-white' :
-                'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-              aria-label={`Sort time zones ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
-              title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
-            >
-             <ArrowUpDown size={16} className="w-4 h-4 md:w-5 md:h-5" />
-            </button>
           </div>
         </header>
 
@@ -340,6 +317,100 @@ function App() {
         }`}>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleSort}
+                className={`p-2 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                  theme === 'dark' 
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
+                    : theme === 'oled'
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-900'
+                    : theme === 'blue'
+                    ? 'text-blue-600 hover:text-blue-800 hover:bg-blue-200'
+                    : theme === 'green'
+                    ? 'text-green-600 hover:text-green-800 hover:bg-green-200'
+                    : theme === 'purple'
+                    ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-200'
+                    : theme === 'red'
+                    ? 'text-red-600 hover:text-red-800 hover:bg-red-200'
+                    : theme === 'orange'
+                    ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-200'
+                    : theme === 'yellow'
+                    ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-200'
+                    : theme === 'pink'
+                    ? 'text-pink-600 hover:text-pink-800 hover:bg-pink-200'
+                    : theme === 'indigo'
+                    ? 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-200'
+                    : theme === 'teal'
+                    ? 'text-teal-600 hover:text-teal-800 hover:bg-teal-200'
+                    : theme === 'cyan'
+                    ? 'text-cyan-600 hover:text-cyan-800 hover:bg-cyan-200'
+                    : theme === 'emerald'
+                    ? 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-200'
+                    : theme === 'lime'
+                    ? 'text-lime-600 hover:text-lime-800 hover:bg-lime-200'
+                    : theme === 'amber'
+                    ? 'text-amber-600 hover:text-amber-800 hover:bg-amber-200'
+                    : theme === 'rose'
+                    ? 'text-rose-600 hover:text-rose-800 hover:bg-rose-200'
+                    : theme === 'cyberpunk'
+                    ? 'text-cyan-400 hover:text-cyan-300 hover:bg-gray-800'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                aria-label={`Sort time zones ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
+                title={`Sort ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
+              >
+                <ArrowUpDown size={16} className="md:w-5 md:h-5" />
+              </button>
+              
+              <button
+                onClick={() => setTimeFormat(timeFormat === '12h' ? '24h' : '12h')}
+                className={`p-2 md:p-3 rounded-lg transition-colors hover:scale-110 ${
+                  theme === 'dark' 
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-700' 
+                    : theme === 'oled'
+                    ? 'text-gray-300 hover:text-gray-100 hover:bg-gray-900'
+                    : theme === 'blue'
+                    ? 'text-blue-600 hover:text-blue-800 hover:bg-blue-200'
+                    : theme === 'green'
+                    ? 'text-green-600 hover:text-green-800 hover:bg-green-200'
+                    : theme === 'purple'
+                    ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-200'
+                    : theme === 'red'
+                    ? 'text-red-600 hover:text-red-800 hover:bg-red-200'
+                    : theme === 'orange'
+                    ? 'text-orange-600 hover:text-orange-800 hover:bg-orange-200'
+                    : theme === 'yellow'
+                    ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-200'
+                    : theme === 'pink'
+                    ? 'text-pink-600 hover:text-pink-800 hover:bg-pink-200'
+                    : theme === 'indigo'
+                    ? 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-200'
+                    : theme === 'teal'
+                    ? 'text-teal-600 hover:text-teal-800 hover:bg-teal-200'
+                    : theme === 'cyan'
+                    ? 'text-cyan-600 hover:text-cyan-800 hover:bg-cyan-200'
+                    : theme === 'emerald'
+                    ? 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-200'
+                    : theme === 'lime'
+                    ? 'text-lime-600 hover:text-lime-800 hover:bg-lime-200'
+                    : theme === 'amber'
+                    ? 'text-amber-600 hover:text-amber-800 hover:bg-amber-200'
+                    : theme === 'rose'
+                    ? 'text-rose-600 hover:text-rose-800 hover:bg-rose-200'
+                    : theme === 'cyberpunk'
+                    ? 'text-cyan-400 hover:text-cyan-300 hover:bg-gray-800'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                }`}
+                aria-label={`Switch to ${timeFormat === '12h' ? '24-hour' : '12-hour'} format`}
+                title={`Switch to ${timeFormat === '12h' ? '24-hour' : '12-hour'} format`}
+              >
+                {timeFormat === '12h' ? (
+                  <Clock12 size={16} className="md:w-5 md:h-5" />
+                ) : (
+                  <Clock4 size={16} className="md:w-5 md:h-5" />
+                )}
+              </button>
+              
               <button
                 onClick={() => setShowThemeSelector(!showThemeSelector)}
                 className={`p-2 md:p-3 rounded-lg transition-colors hover:scale-110 ${

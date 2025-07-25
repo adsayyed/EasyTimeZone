@@ -25,4 +25,5 @@ export interface UserPreferences {
   baseZoneId: string;
   theme: Theme;
   fontSettings: FontSettings;
+  timeFormat?: '12h' | '24h';
 }
