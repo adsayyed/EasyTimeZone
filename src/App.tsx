@@ -263,7 +263,7 @@ function App() {
 
         {/* Time Zone Cards */}
         <main className="mb-24 md:mb-20">
-          <div className="flex flex-col lg:flex-row lg:flex-wrap justify-center items-center gap-4 lg:gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 max-w-7xl mx-auto justify-items-center">
             {timeZones.map((zone, index) => (
               <TimeZoneCard
                 key={zone.id}

@@ -30,7 +30,7 @@ export const getDefaultTimeZones = (): TimeZone[] => {
   const defaultZoneIds = [
     'America/Los_Angeles',  // PST (Pacific)
     'America/Chicago',      // CST (Central - base)
-    'America/New_York'      // EST (Eastern)
+    'Europe/London'         // GMT (Greenwich Mean Time)
   ];
   
   return defaultZoneIds.map(zoneId => {
