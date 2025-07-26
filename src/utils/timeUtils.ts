@@ -313,18 +313,8 @@ export const parseTimeInput = (timeString: string, baseZone: string): Date | nul
         hours = 0;
       }
       
-      const timeStr = `${today}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-      
-      // Create a date object that represents this time in the target timezone
-      const localDate = new Date(timeStr);
-      
-      // Convert from the target timezone to UTC, then to local time
-      // This ensures the time is interpreted as being in the target timezone
-      const targetOffset = getTimezoneOffset(baseZone, localDate);
-      const localOffset = localDate.getTimezoneOffset();
-      const adjustedTime = new Date(localDate.getTime() + (targetOffset + localOffset) * 60000);
-      
-      return adjustedTime;
+      // Create a date in the target timezone by using the timezone-aware approach
+      return createDateInTimezone(today, hours, minutes, baseZone);
     }
     
     // Handle 24-hour format (e.g., "14:30")
@@ -335,17 +325,8 @@ export const parseTimeInput = (timeString: string, baseZone: string): Date | nul
       const hours = parseInt(twentyFourHourMatch[1]);
       const minutes = parseInt(twentyFourHourMatch[2]);
       
-      const timeStr = `${today}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-      
-      // Create a date object that represents this time in the target timezone
-      const localDate = new Date(timeStr);
-      
-      // Convert from the target timezone to UTC, then to local time
-      const targetOffset = getTimezoneOffset(baseZone, localDate);
-      const localOffset = localDate.getTimezoneOffset();
-      const adjustedTime = new Date(localDate.getTime() + (targetOffset + localOffset) * 60000);
-      
-      return adjustedTime;
+      // Create a date in the target timezone by using the timezone-aware approach
+      return createDateInTimezone(today, hours, minutes, baseZone);
     }
     
     return null;
@@ -355,14 +336,35 @@ export const parseTimeInput = (timeString: string, baseZone: string): Date | nul
   }
 };
 
-// Helper function to get timezone offset in minutes
-const getTimezoneOffset = (timeZone: string, date: Date): number => {
+// Helper function to create a date that represents a specific time in a specific timezone
+const createDateInTimezone = (dateStr: string, hours: number, minutes: number, timeZone: string): Date => {
   try {
-    const utc1 = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
-    const utc2 = new Date(date.toLocaleString('en-US', { timeZone }));
-    return (utc2.getTime() - utc1.getTime()) / (1000 * 60);
+    // Create a temporary date string in the target timezone
+    const tempDateStr = `${dateStr}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+    
+    // Parse as if it's in the local timezone first
+    const tempDate = new Date(tempDateStr);
+    
+    // Get what this time would be in the target timezone
+    const targetFormatter = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
+    // Get what the current time shows in the target timezone
+    const currentInTarget = targetFormatter.format(tempDate);
+    const currentTargetDate = new Date(currentInTarget);
+    
+    // Calculate the difference and adjust
+    const diff = tempDate.getTime() - currentTargetDate.getTime();
+    return new Date(tempDate.getTime() + diff);
   } catch (error) {
-    console.error(`Error getting timezone offset for ${timeZone}:`, error);
-    return 0;
+    console.error(`Error creating date in timezone ${timeZone}:`, error);
+    return new Date();
   }
 };
