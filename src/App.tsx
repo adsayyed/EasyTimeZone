@@ -164,48 +164,6 @@ function App() {
     setSortOrder('asc');
     setTimeFormat('12h');
   };
-    if (parsedTime) {
-      setManualTime(parsedTime);
-      setLiveTime(false); // Disable live time when manual time is set
-    }
-    setShowTimeInput(false);
-    setSelectedZoneForTimeInput(null);
-  };
-
-  const handleTimeZoneTimeClick = (zoneId?: string) => {
-    setSelectedZoneForTimeInput(zoneId || null);
-    setShowTimeInput(true);
-  };
-
-  const handleClearManualTime = () => {
-    setManualTime(null);
-  };
-
-  const handleSort = () => {
-    const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortOrder(newSortOrder);
-    
-    const sortedZones = [...timeZones].sort((a, b) => {
-      if (newSortOrder === 'asc') {
-        return a.offset - b.offset; // Negative offsets first (earlier times)
-      } else {
-        return b.offset - a.offset; // Positive offsets first (later times)
-      }
-    });
-    
-    setTimeZones(sortedZones);
-  };
-
-  const handleReset = () => {
-    setTimeZones(getDefaultTimeZones());
-    setBaseZoneId('America/Chicago');
-    setTheme('light');
-    setFontSettings({ family: 'sans' });
-    setLiveTime(false);
-    setManualTime(null);
-    setSortOrder('asc');
-    setTimeFormat('12h');
-  };
 
   const themeClasses = {
     light: 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 min-h-screen',
