@@ -21,6 +21,7 @@ function App() {
   const [showTimeInput, setShowTimeInput] = useState<boolean>(false);
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [manualTime, setManualTime] = useState<Date | null>(null);
+  const [selectedZoneForTimeInput, setSelectedZoneForTimeInput] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>('light');
   const [fontSettings, setFontSettings] = useState<FontSettings>({ size: 'medium', family: 'sans' });
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -115,15 +116,18 @@ function App() {
   };
 
   const handleTimeInput = (timeString: string) => {
-    const parsedTime = parseTimeInput(timeString, baseZoneId);
+    const targetZone = selectedZoneForTimeInput || baseZoneId;
+    const parsedTime = parseTimeInput(timeString, targetZone);
     if (parsedTime) {
       setManualTime(parsedTime);
       setLiveTime(false); // Disable live time when manual time is set
     }
     setShowTimeInput(false);
+    setSelectedZoneForTimeInput(null);
   };
 
-  const handleTimeZoneTimeClick = () => {
+  const handleTimeZoneTimeClick = (zoneId?: string) => {
+    setSelectedZoneForTimeInput(zoneId || null);
     setShowTimeInput(true);
   };
 
@@ -214,7 +218,7 @@ function App() {
               onClick={manualTime ? () => {
                 handleClearManualTime();
                 setLiveTime(true);
-              } : () => setShowTimeInput(true)}
+              } : () => handleTimeZoneTimeClick()}
               className={`px-3 py-2 md:px-4 md:py-2 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-lg text-white ${
                 manualTime
                   ? (theme === 'light' ? 'bg-orange-500 hover:bg-orange-600' :
@@ -273,7 +277,7 @@ function App() {
                 onRemove={() => handleRemoveTimeZone(zone.id)}
                 theme={theme}
                 canRemove={timeZones.length > 1}
-                onTimeClick={handleTimeZoneTimeClick}
+                onTimeClick={() => handleTimeZoneTimeClick(zone.id)}
               />
             ))}
           </div>
@@ -642,6 +646,7 @@ function App() {
             onTimeSubmit={handleTimeInput}
             onClose={() => setShowTimeInput(false)}
             theme={theme}
+            targetZone={selectedZoneForTimeInput}
           />
         )}
 

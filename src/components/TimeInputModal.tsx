@@ -6,12 +6,14 @@ interface TimeInputModalProps {
   onTimeSubmit: (timeString: string) => void;
   onClose: () => void;
   theme: Theme;
+  targetZone?: string | null;
 }
 
 const TimeInputModal: React.FC<TimeInputModalProps> = ({
   onTimeSubmit,
   onClose,
-  theme
+  theme,
+  targetZone
 }) => {
   const [timeInput, setTimeInput] = useState('');
   const [error, setError] = useState('');
@@ -117,7 +119,9 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({
               theme === 'rose' ? 'text-rose-600' :
               ''
             }`} />
-            <h2 className="text-lg font-semibold">Set Custom Time</h2>
+            <h2 className="text-lg font-semibold">
+              Set Custom Time{targetZone ? ` for ${targetZone.split('/').pop()?.replace(/_/g, ' ')}` : ''}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -150,7 +154,7 @@ const TimeInputModal: React.FC<TimeInputModalProps> = ({
         <form onSubmit={handleSubmit} className="p-4">
           <div className="mb-4">
             <label htmlFor="time-input" className="block text-sm font-medium mb-2">
-              Enter time (12-hour or 24-hour format)
+              Enter time (12-hour or 24-hour format){targetZone ? ` for ${targetZone.split('/').pop()?.replace(/_/g, ' ')}` : ''}
             </label>
             <input
               id="time-input"
